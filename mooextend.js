@@ -1,6 +1,6 @@
 /*
 Global shortcuts:
-  $E : shortcut for document.getElement(css-selector)
+	$E : shortcut for document.getElement(css-selector)
 	$A : shortcut for Array.from , convert args to array
 	$getText : Fast retrieval of textvalue of a dom node. (no conversion to a mootools Element)
 
@@ -80,7 +80,7 @@ demo: http://leviwheatcroft.com/rendAr/demo.htm
 
 authors:
 - Levi Wheatcroft (leviwheatcroft.com)
-with small updates (jspwiki)
+- with few extentions:  attach feature; code optimizations
 
 provides:
 - Array.rendAr
@@ -92,52 +92,39 @@ requires:
 
 ...
 */
-/*
-Example:
-	//this.modal = null;
-	this.element = [
-		'div.some-div', [
-			'div.another-div',
-			'div.modal', {attach:[this,'modal'], events:{click:clickHdl}},
-			'div.done'
-		]
-	].rendAr();
-
-	this.modal.hide();
-
-*/
 Element.Properties.attach = {
-	set: function(object) {
-		//console.log(object);
-		object[0][ object[1]||'element' ] = this;
-		/*
-		var keys = (object[1]||'element').split('.'),key;
-		object = object[0];
-		while( object && (key = keys.shift() )){
-			object = ( key in object ? object[key] : undefined );
-		};
-		if(object){ object = this; }
-		*/
-		//this.store('attach', object);
+
+    //Usage:
+    //    new Element('div',{ attach:[this] }); //this.element now refers to div
+    //    new Element('div',{ attach:[this,'myproperty'] }); //this.myproperty now refers to div
+    //    ['div',{attach:[this,'myproperty'] }].rendAr();
+
+	set: function( object ){
+		object[0][ object[1] || 'element' ] = this;
 	}
+
 };
+
 Array.implement({
 
-	rendAr: function() {
-		var elements = [],type;
-		this.each( function(item){
-			type = typeOf(item);
-			//console.log(type, item);
-			if (type == 'element')  elements.push(item);
-			else if (type == 'string')   elements.push(new Element(item));
-			else if (type == 'object')   elements.getLast().set(item);
-			else if (type == 'array')    elements.getLast().adopt(item.rendAr());
-			else if (type == 'elements') elements.append(item);
+    rendAr: function() {
+      var elements = [],type;
+        this.each( function(item){
+            type = typeOf(item);
+            if ( type == 'elements' ) elements.append(item);
+            else if ( item.grab /*isElement*/ ) elements.push(item);
+            else if ( item.big  /*isString*/ ) elements.push(new Element(item));
+            else if ( type == 'object' ) elements.getLast().set(item);
+            else if ( item.pop /*isArray*/ ) elements.getLast().adopt(item.rendAr());
          });
       return elements[1] ? new Elements(elements) : elements[0];
-   }
+    },
+
+    max: function(){ return Math.max.apply(null, this); },
+    min: function(){ return Math.min.apply(null, this); }
 
 });
+
 
 
 Element.implement({
@@ -160,9 +147,8 @@ Element.implement({
 	*/
 	ifClass : function(flag, trueClass, falseClass){
 
-		if(trueClass)  this[(flag ? 'add':'remove')+'Class'](trueClass);
-		if(falseClass) this[(flag ? 'remove':'add')+'Class'](falseClass);
-		return this;
+		return  this.addClass( flag ? trueClass : falseClass)
+					.removeClass( flag ? falseClass : trueClass);
 
 	},
 
@@ -183,6 +169,7 @@ Element.implement({
 	addHover: function(clazz){
 
 		clazz = clazz || 'hover';
+
 		return this.addEvents({
 			mouseenter: function(){ this.addClass(clazz); },
 			mouseleave: function(){ this.removeClass(clazz); }
@@ -199,18 +186,15 @@ Element.implement({
 	*/
 	hoverOn: function(parent){
 
-		var element = this,
-			parent = element.getParent(parent);
+		var element = this;
 
-		if(parent){
-	 		element.store("$hoverP",parent).set('visibility','visible').fade('hide'); //checkme
+		if( parent = element.getParent(parent) ){
+
+	 		element.store("$hoverparent",parent).set('visibility','visible').fade('hide'); //checkme
 
  			parent.addEvents({
 				mouseenter: function(){ element.fade(0) },
-				mouseleave: function(){
-				  	element.hoverUpdate();
-				  	element.fade(0.9);
-				}
+				mouseleave: function(){	element.hoverUpdate().fade(0.9) }
 			});
 		}
 		return element;
@@ -220,10 +204,10 @@ Element.implement({
 	/*
 	Function: hoverUpdate
 		Reposition the menu
+		Checkme : replace by css ?
 	*/
-	updateHover: function(){
+	hoverUpdate: function(){
 
-//check -- is this needed ?  should be done automatically by css
 		var parent = this.get("$hoverparent");
 
 		if( parent ){
