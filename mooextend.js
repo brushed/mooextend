@@ -108,7 +108,9 @@ Element.Properties.attach = {
 Array.implement({
 
 	rendAr: function() {
-	  var elements = [],type;
+
+		var elements = [],type;
+
 		this.each( function(item){
 			type = typeOf(item);
 			if ( type == 'elements' ) elements.append(item);
@@ -116,15 +118,15 @@ Array.implement({
 			else if ( item.big  /*isString*/ ) elements.push(new Element(item));
 			else if ( type == 'object' ) elements.getLast().set(item);
 			else if ( item.pop /*isArray*/ ) elements.getLast().adopt(item.rendAr());
-		 });
-	  return elements[1] ? new Elements(elements) : elements[0];
+		});
+
+		return elements[1] ? new Elements(elements) : elements[0];
 	},
 
 	max: function(){ return Math.max.apply(null, this); },
 	min: function(){ return Math.min.apply(null, this); }
 
 });
-
 
 
 Element.implement({
@@ -136,8 +138,8 @@ Element.implement({
 
 	Arguments:
 		flag : (boolean)
-		trueClass : (string) css class name, add on true, remove on false
-		falseClass : (string) css class name, remove on true, add on false
+		T_Class : (string) css class name, add on true, remove on false
+		F_Class : (string) css class name, remove on true, add on false
 
 	Returns:
 		(element) - This Element
@@ -145,10 +147,9 @@ Element.implement({
 	Examples:
 	>	$('page').ifClass( i>5, 'hideMe' );
 	*/
-	ifClass : function(flag, trueClass, falseClass){
+	ifClass : function(flag, T_Class, F_Class){
 
-		return  this.addClass( flag ? trueClass : falseClass)
-					.removeClass( flag ? falseClass : trueClass);
+		return  this.addClass(flag?T_Class:F_Class).removeClass(flag?F_Class:T_Class);
 
 	},
 
