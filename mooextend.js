@@ -11,8 +11,8 @@ var $ = document.id;
 	//$getText = function(el){  return el.innerText || el.textContent || ''; };
 
 if(typeof(console) === 'undefined'){
-    var console = {}
-    console.log = /*console.error = console.info = console.debug = console.warn = console.trace = console.dir = console.dirxml = console.group = console.groupEnd = console.time = console.timeEnd = console.assert = console.profile = */ function(){};
+	var console = {}
+	console.log = /*console.error = console.info = console.debug = console.warn = console.trace = console.dir = console.dirxml = console.group = console.groupEnd = console.time = console.timeEnd = console.assert = console.profile = */ function(){};
 }
 
 
@@ -24,18 +24,18 @@ String.implement({
 	/* fix mootools implementation
 	   supporting i18n chars such as éàè...
 	*/
-    capitalize: function(){
-        return this.replace(/(\s|^)\S/g, function(match){
-            return match.toUpperCase();
-        });
-    },
+	capitalize: function(){
+		return this.replace(/(\s|^)\S/g, function(match){
+			return match.toUpperCase();
+		});
+	},
 
 	/*
 	Function: deCamelize
 		Convert camelCase string to space-separated set of words.
 
 	Example:
-	> "CamelCase".deCamelize(); //returns "Camel Case"
+	>	"CamelCase".deCamelize(); //returns "Camel Case"
 	*/
 	deCamelize: function(){
 		//return this.replace(/([a-z])([A-Z])/g,"$1 $2");
@@ -94,10 +94,10 @@ requires:
 */
 Element.Properties.attach = {
 
-    //Usage:
-    //    new Element('div',{ attach:[this] }); //this.element now refers to div
-    //    new Element('div',{ attach:[this,'myproperty'] }); //this.myproperty now refers to div
-    //    ['div',{attach:[this,'myproperty'] }].rendAr();
+	//Usage:
+	//	new Element('div',{ attach:[this] }); //this.element now refers to div
+	//	new Element('div',{ attach:[this,'myproperty'] }); //this.myproperty now refers to div
+	//	['div',{attach:[this,'myproperty'] }].rendAr();
 
 	set: function( object ){
 		object[0][ object[1] || 'element' ] = this;
@@ -107,21 +107,21 @@ Element.Properties.attach = {
 
 Array.implement({
 
-    rendAr: function() {
-      var elements = [],type;
-        this.each( function(item){
-            type = typeOf(item);
-            if ( type == 'elements' ) elements.append(item);
-            else if ( item.grab /*isElement*/ ) elements.push(item);
-            else if ( item.big  /*isString*/ ) elements.push(new Element(item));
-            else if ( type == 'object' ) elements.getLast().set(item);
-            else if ( item.pop /*isArray*/ ) elements.getLast().adopt(item.rendAr());
-         });
-      return elements[1] ? new Elements(elements) : elements[0];
-    },
+	rendAr: function() {
+	  var elements = [],type;
+		this.each( function(item){
+			type = typeOf(item);
+			if ( type == 'elements' ) elements.append(item);
+			else if ( item.grab /*isElement*/ ) elements.push(item);
+			else if ( item.big  /*isString*/ ) elements.push(new Element(item));
+			else if ( type == 'object' ) elements.getLast().set(item);
+			else if ( item.pop /*isArray*/ ) elements.getLast().adopt(item.rendAr());
+		 });
+	  return elements[1] ? new Elements(elements) : elements[0];
+	},
 
-    max: function(){ return Math.max.apply(null, this); },
-    min: function(){ return Math.min.apply(null, this); }
+	max: function(){ return Math.max.apply(null, this); },
+	min: function(){ return Math.min.apply(null, this); }
 
 });
 
