@@ -1,29 +1,17 @@
 /*
-Global shortcuts:
-	$E : shortcut for document.getElement(css-selector)
-	$A : shortcut for Array.from , convert args to array
-	$getText : Fast retrieval of textvalue of a dom node. (no conversion to a mootools Element)
-
-FIXME: Hide them from the global namespace
-*/
-var $ = document.id;
-	//$E = document.getElement.bind(document),
-	//$getText = function(el){  return el.innerText || el.textContent || ''; };
-
 if(typeof(console) === 'undefined'){
 	var console = {}
-	console.log = /*console.error = console.info = console.debug = console.warn = console.trace = console.dir = console.dirxml = console.group = console.groupEnd = console.time = console.timeEnd = console.assert = console.profile = */ function(){};
+	console.log = //console.error = console.info = console.debug = console.warn = console.trace = console.dir = console.dirxml = console.group = console.groupEnd = console.time = console.timeEnd = console.assert = console.profile =
+		function(){};
 }
-
+*/
 
 /*
 Global: mootools-extensions
 */
 String.implement({
 
-	/* fix mootools implementation
-	   supporting i18n chars such as éàè...
-	*/
+	/* fix mootools implementation , supporting i18n chars such as éàè... */
 	capitalize: function(){
 		return this.replace(/(\s|^)\S/g, function(match){
 			return match.toUpperCase();
@@ -35,7 +23,7 @@ String.implement({
 		Convert camelCase string to space-separated set of words.
 
 	Example:
-	>	"CamelCase".deCamelize(); //returns "Camel Case"
+	>	"CamelCase".deCamelize() === "Camel Case";
 	*/
 	deCamelize: function(){
 		//return this.replace(/([a-z])([A-Z])/g,"$1 $2");
@@ -58,10 +46,10 @@ String.implement({
 			text-overflow:ellipsis;
 
 	Example:
-	> "this is a long string".trunc(7); //returns "this is..."
-	> "this is a long string".trunc(7,'__'); //returns "this is__"
+	> "this is a long string".trunc(7) === "this is..."
+	> "this is a long string".trunc(7,'__') === "this is__"
 	*/
-	trunc: function (size, elips) {
+	trunc: function (size, elips){
 		return this.slice(0, size-1) + ((this.length<size) ? '' : (elips||'…'));
 	}
 
@@ -95,11 +83,13 @@ requires:
 Element.Properties.attach = {
 
 	//Usage:
-	//	new Element('div',{ attach:[this] }); //this.element now refers to div
+	//	new Element('div',{ attach:this });		//this.element now refers to div
+	//	new Element('div',{ attach:[this] });	//this.element now refers to div
 	//	new Element('div',{ attach:[this,'myproperty'] }); //this.myproperty now refers to div
 	//	['div',{attach:[this,'myproperty'] }].rendAr();
 
 	set: function( object ){
+		if(!object[0]) object = [object];
 		object[0][ object[1] || 'element' ] = this;
 	}
 
@@ -126,8 +116,32 @@ Array.implement({
 	max: function(){ return Math.max.apply(null, this); },
 	min: function(){ return Math.min.apply(null, this); }
 
+
 });
 
+
+/*
+Function: autofocus
+	Set the focus of a certain form element, depending on the context of the page.
+	Uses the html5 'autofocus' attribute; js fallback when autofocus is not supported.
+	Protect against IEx: you can't set the focus on invisible elements.
+
+Example:
+	> var f = document.getElement('input:autofocus,textarea:autofocus');
+
+*/
+if( !('autofocus' in document.createElement('input') ) ){
+
+	//Slick.defineAttributeGetter('autofocus', function(){
+	//    return this.getAttribute('autofocus') && this.isVisible();
+	//});
+	//var f = document.getElement('input[autofocus],textarea[autofocus]');
+
+	Slick.definePseudo('autofocus',function(value){
+		return this.getAttribute('autofocus') && this.isVisible();
+	});
+
+}
 
 Element.implement({
 
@@ -274,5 +288,3 @@ Element.implement({
 	}
 
 });
-
-
