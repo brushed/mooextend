@@ -1,5 +1,5 @@
 /*
-Global: mootools-extensions
+Mootools-extensions
 	String : capitalize,() deCamelize(), trunc(), xsubs()
 	Array:  rendAr(), max(), min()
 	Element: ifClass(), hoverOn,  getDefaultValue()
