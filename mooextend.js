@@ -51,7 +51,26 @@ String.implement({
 	*/
 	trunc: function (size, elips){
 		return this.slice(0, size-1) + ((this.length<size) ? '' : (elips||'…'));
+	},
+
+	/*
+	Function: xsubs (extended Substitute)
+		Equal to substitute(), but with support for anonymous arguments.
+
+		Named arguments:
+		>	"Hello {text}".xsubs({text:"world"}) ==>  "Hello world"
+		Anonymous arguments:
+		>	"Hello {0}{1}".xsubs("world", "!") ===  "Hello world!"
+	*/
+	xsubs: function(object, regexp){
+
+		if( typeOf(object) != 'object' ){
+			object = Array.from(arguments);
+			regexp = null;
+		}
+		return this.substitute(object, regexp);
 	}
+
 
 });
 
@@ -116,6 +135,11 @@ Array.implement({
 	max: function(){ return Math.max.apply(null, this); },
 	min: function(){ return Math.min.apply(null, this); }
 
+	/* natural sort algortihm
+	sortNat: function(){
+
+	}
+	*/
 
 });
 
@@ -288,3 +312,5 @@ Element.implement({
 	}
 
 });
+
+
