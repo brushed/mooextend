@@ -1,4 +1,11 @@
 /*
+Global: mootools-extensions
+	String : capitalize,() deCamelize(), trunc(), xsubs()
+	Array:  rendAr(), max(), min()
+	Element: ifClass(), hoverOn,  getDefaultValue()
+*/
+
+/*
 if(typeof(console) === 'undefined'){
 	var console = {}
 	console.log = //console.error = console.info = console.debug = console.warn = console.trace = console.dir = console.dirxml = console.group = console.groupEnd = console.time = console.timeEnd = console.assert = console.profile =
@@ -6,9 +13,6 @@ if(typeof(console) === 'undefined'){
 }
 */
 
-/*
-Global: mootools-extensions
-*/
 String.implement({
 
 	/* fix mootools implementation , supporting i18n chars such as éàè... */
