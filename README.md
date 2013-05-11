@@ -6,6 +6,7 @@ Some extentions for native data-types in mootools:
 	- capitalize() : fix mootools implementation supporting i18n chars such as éàè..
 	- deCamelize() : convert camelCase string to space-separated set of words
 	- trunc(size, elips) : convert string to a maximum length
+	- xsubs(object,regexp) : same as substitute() with support or anonymous arguments
 - Array
 	- rendArr() : based on https://github.com/Mr5o1/rendAr
 	- min() : return minimum value of an array of numbers
