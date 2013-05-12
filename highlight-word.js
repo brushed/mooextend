@@ -16,7 +16,8 @@ History:
 */
 function HighlightWord( node, query ){
 
-	var words,
+	var highlight = "<span class='highlight'>$1</span>",
+		words,
 
 		//recursive node processing function
 		walkDomTree = function(node, matchWord ){
@@ -40,7 +41,7 @@ function HighlightWord( node, query ){
 				if( matchWord.test( s ) ){
 
 					tmp = new Element('span',{
-							html: s.replace( matchWord, "<span class='searchword'>$1</span>")
+							html: s.replace( matchWord, highlight)
 						});
 
 					f = document.createDocumentFragment();

@@ -3,7 +3,7 @@ Class: Color
 	Class for creating and manipulating colors in JavaScript.
 	This is a minimized variant of the Color class, based Mootools.More,
 	written for jspwiki.
-	It also supports the html color names.
+	It adds supports for html color names. (ref. http://en.wikipedia.org/wiki/Web_colors)
  
 Syntax:
 	>var myColor = new Color(color[, type]);
@@ -37,10 +37,13 @@ var RGB = 'rgb',
 	if (arguments.length >= 3){
 		type = RGB; color = Array.slice(arguments, 0, 3);
 	} else if (typeof color == 'string'){
+		if(color.test(/^[\da-f]{3,6}$/)) color = "#"+color;
+		c0l0r.setStyle('color',''); //clear template
 		color = ( VGA.test( RegExp(color+"(#\\S+)" ) ) ?
 			RegExp.$1 : color.match(/rgb/) ?
 				color.rgbToHex() :
 					c0l0r.setStyle('color',color).getStyle('color') ).hexToRgb(true);
+
 
 	}
 	type = type || RGB;
