@@ -6,21 +6,19 @@ Class: HighlightWord
 
 Credit:
 	Inspired by http://www.kryogenix.org/code/browser/searchhi/
+	Refactored for JSPWiki -- now based on regexp's.
 
-History:
-	- Modified 21006 to fix query string parsing and add case insensitivity
-	- Modified 20030227 by sgala@hisitech.com to skip words
-	  with "-" and cut %2B (+) preceding pages
-	- Refactored for JSPWiki -- now based on regexp
-
+Arguments
+	node - (DOM-element)
+	query - (optional) query string, default is document referrer query string
+	highlight - (string) html template replacement string, default <span class='highlight'>$1</span>
 */
-function HighlightWord( node, query ){
+function HighlightWord( node, query, highlight ){
 
-	var highlight = "<span class='highlight'>$1</span>",
-		words,
+	var words,
 
 		//recursive node processing function
-		walkDomTree = function(node, matchWord ){
+		walk = function(node, regexp){
 
 		if( node ){
 
@@ -28,26 +26,28 @@ function HighlightWord( node, query ){
 			for( var nn=null, n = node.firstChild; n ; n = nn ){
 				// prefetch nextSibling cause the tree will be modified
 				nn = n. nextSibling;
-				walkDomTree(n, matchWord);
+				walk(n, matchWord);
 			}
 
 			// continue on text-nodes, not yet highlighted
 			if( node.nodeType == 3 ){
 
-				var s = $getText( node ),tmp,f;
+				var s = node.innerText || node.textContent || '',
+					tmp,
+					frag;
 
 				s = s.replace(/</g,'&lt;'); // pre text elements may contain <xml> element
 
-				if( matchWord.test( s ) ){
+				if( regexp.test( s ) ){
 
 					tmp = new Element('span',{
-							html: s.replace( matchWord, highlight)
-						});
+						html: s.replace(regexp, highlight || "<span class='highlight'>$1</span>")
+					});
 
-					f = document.createDocumentFragment();
-					while( tmp.firstChild ) f.appendChild( tmp.firstChild );
+					frag = document.createDocumentFragment();
+					while( tmp.firstChild ) frag.appendChild( tmp.firstChild );
 
-					node.parentNode.replaceChild( f, node );
+					node.parentNode.replaceChild( frag, node );
 
 					tmp.dispose(); //avoid dom-leaks
 				}
@@ -64,9 +64,10 @@ function HighlightWord( node, query ){
 					.replace( /\+/g, " " )
 					.replace( /\s+-\S+/g, "" )
 					.replace( /([\(\[\{\\\^\$\|\)\?\*\.\+])/g, "\\$1" ) //escape metachars
-					.trim().split(/\s+/).join("|");
+					//.trim().split(/\s+/).join("|");
+					.trim().replace(/\s+/g,'|');
 
-		walkDomTree( node , RegExp( "(" + words + ")" , "gi") );
+		walk( node , RegExp( "(" + words + ")" , "gi") );
 
 	}
 
