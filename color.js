@@ -37,13 +37,12 @@ var RGB = 'rgb',
 	if (arguments.length >= 3){
 		type = RGB; color = Array.slice(arguments, 0, 3);
 	} else if (typeof color == 'string'){
-		if(color.test(/^[\da-f]{3,6}$/)) color = "#"+color;
-		c0l0r.setStyle('color',''); //clear template
-		color = ( VGA.test( RegExp(color+"(#\\S+)" ) ) ?
-			RegExp.$1 : color.match(/rgb/) ?
-				color.rgbToHex() :
-					c0l0r.setStyle('color',color).getStyle('color') ).hexToRgb(true);
 
+		if(color.test(/^[\da-f]{3,6}$/)) color = "#"+color;
+		c0l0r.setStyle('color',''); //clear the template
+		color = ( VGA.test( RegExp(color+"(#\\S+)" ) ) ? RegExp.$1 :
+			color.match(/rgb/) ? color.rgbToHex() :
+				c0l0r.setStyle('color',color).getStyle('color') ).hexToRgb(true);
 
 	}
 	type = type || RGB;
@@ -68,7 +67,7 @@ Color.implement({
 	},
 
 	invert: function(){
-		return new Color(255-this[0],255-this[1],255-this[3]);
+		return new Color(255-this[0],255-this[1],255-this[2]);
 		/*return new Color(this.map(function(value){
 			return 255 - value;
 		}));*/

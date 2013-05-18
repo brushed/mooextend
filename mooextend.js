@@ -1,8 +1,8 @@
 /*
-Mootools-extensions
+Global: mootools-extensions
 	String : capitalize,() deCamelize(), trunc(), xsubs()
 	Array:  rendAr(), max(), min()
-	Element: ifClass(), hoverOn,  getDefaultValue()
+	Element: ifClass(), addHover(),hoverOn(), hoverUpdate(), getDefaultValue()
 */
 
 /*
@@ -73,8 +73,33 @@ String.implement({
 			regexp = null;
 		}
 		return this.substitute(object, regexp);
-	}
+	},
 
+	/*
+	Function: sliceArgs
+		Parse the arguments of a string or an element's class-name.
+		Command pattern: <prefix>(-arg1)(-arg2)...
+		Returns an array of arguments.
+
+	Arguments:
+		object : (string) or (dom-element)
+		regexp : (string) pattern match for the arguments
+
+	Example
+		> parseArgs( "zebra-eee-ffa", "zebra" ) == ["eee","ffa"];
+
+	CHECK:
+		> command.sliceArgs( args-string | element-with-classname );
+		> "zebra".sliceArgs( "zebra-eee-ffa" );
+
+	*/
+	sliceArgs: function(args, regexp){
+
+		if( args.grab /*typeOf(object)==args*/) args = args.className;
+		if( !regexp) regexp = "(?:-\\w+)*";
+		return ( args.match( RegExp(this+regexp) )||[''] )[0].split('-').slice(1);
+
+	}
 
 });
 
