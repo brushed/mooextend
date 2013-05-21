@@ -7,12 +7,17 @@ Class: Behavior
   Extended for jspwiki.
 
 Example:
-	var behavior = new Behavior()
-	// define a new slider behavior, which initiates a slider class.
-	behavior.add('.slider', function(element){
-    	new Slider(element)
-	})
-	ready( function(){ behavior.update() });
+
+    var behavior = new Behavior()
+
+    // define a new slider behavior, which initiates a slider class.
+    behavior.add('.slider', function(element){
+        new Slider(element)
+    })
+
+    ...
+    window.addEvent('domready', function(){ behavior.update() });
+
 */
 var Behavior = new Class({
 
@@ -21,28 +26,40 @@ var Behavior = new Class({
     },
 
     add: function(selector, behavior, options){
+
         this.behaviors.push({s: selector, b: behavior, o: options});
         return this;
+
     },
 
     update: function(){
 
-    console.log(this.behaviors);
-        //array.forEach(this.behaviors, function(behavior){
-        this.behaviors.each( function(behavior){
-            //var nodes = $(behavior.s);
-            //if (nodes) nodes.each(function(node){
-            $$(behavior.s).each(function(node){
+        //console.log(this.behaviors);
+
+        this.behaviors.each( function( behavior ){
+
+            $$(behavior.s).each( function(node){
+
                 node = $(node);
                 var updated = node._behaviorUpdated || (node._behaviorUpdated = []);
-                //if (array.indexOf(updated, behavior) == -1){
-                if (updated.indexOf(behavior) == -1){
-                    //behavior.b.call(node, node)
-                    behavior.b.call(node, node, behavior.o);
-                    updated.push(behavior);
+
+                if ( updated.indexOf(behavior) == -1 ){
+
+console.log( typeOf(behavior.b) );
+                    // behavior.add('img.reflect','reflect');
+                    var type = typeOf(behavior.b);
+                    //if( type=='string')   node[behavior.b](behavior.o);
+                    if( type=='class'){ new behavior.b(node, behavior.o); }
+                    else if( type=='function'){ behavior.b.call(node, node, behavior.o); }
+
+                    //behavior.b.call( node, node, behavior.o );
+                    updated.push( behavior );
                 }
             })
+
         })
+
         return this;
     }
+
 });

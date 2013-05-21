@@ -1,31 +1,36 @@
 /*
 Class: Placeholder
-	Backwards compatible handling of the html5 'placeholder' attribute.
+    Backwards compatible handling of the html5 'placeholder' attribute.
+
+DOM structure:
+>    <input name="search" placeholder="Search..." />
 
 Example:
-	<input name="search" placeholder="Search..." />
+>    $$('input[paceholder]').placeholder();
 
 */
 
-var Placeholder = ('placeholder' in document.createElement('input')) ? function(){} : new Class({
+Element.implement({
 
-	initialize: function(element, options){
+    placeholder: ('placeholder' in document.createElement('input')) ? function(){} : function(){
 
-		options = this.setOptions(options).options;
+        var element = this,
+            span = new Element('span.placeholder[role=display]',{
+                text: element.placeholder,
+                styles: {
+                    top: element.offsetTop,
+                    left: element.offsetLeft
+                }
+            });
 
-		var span = new Element('span.placeholder[role=display]',{
-			text:element.placeholder,
-			styles:{
-				top: element.offsetTop,
-				left: element.offsetLeft
-		}});
+        element.addEvents({
+            focus: function(){ span.hide(); },
+            blur: function(){ if (!element.value && !element.innerHTML){ span.show(); } }
+        });
 
-		element.addEvents({
-			focus: function(){ span.hide(); },
-			blur: function(){ if (!element.value && !element.innerHTML){ span.show(); } }
-		});
+        element.offsetParent.appendChild(span);
 
-		element.offsetParent.appendChild(span);
+        return element;
+    }
 
-	}
 });
