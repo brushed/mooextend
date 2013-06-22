@@ -1,6 +1,8 @@
 mooextend
 =========
 
+Alpha - work in progress / use at your own risk
+
 Some extensions for native data-types in mootools:
 
 - String

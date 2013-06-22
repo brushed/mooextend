@@ -35,24 +35,22 @@ var Behavior = new Class({
     update: function(){
 
         //console.log(this.behaviors);
+        var cache = "_behaviorUpdated",updated, type;
 
         this.behaviors.each( function( behavior ){
 
             $$(behavior.s).each( function(node){
 
-                node = $(node);
-                var updated = node._behaviorUpdated || (node._behaviorUpdated = []);
+                updated = node[cache] || (node[cache] = []);
 
                 if ( updated.indexOf(behavior) == -1 ){
 
-console.log( typeOf(behavior.b) );
-                    // behavior.add('img.reflect','reflect');
-                    var type = typeOf(behavior.b);
-                    //if( type=='string')   node[behavior.b](behavior.o);
-                    if( type=='class'){ new behavior.b(node, behavior.o); }
-                    else if( type=='function'){ behavior.b.call(node, node, behavior.o); }
+                    // console.log( typeOf(behavior.b) );
+                    type = typeOf(behavior.b);
+                    //if( type == 'string' ) node[behavior.b](behavior.o);
+                    if( type == 'class'){ new behavior.b(node, behavior.o); }
+                    else if( type == 'function'){ behavior.b.call(node, node, behavior.o); }
 
-                    //behavior.b.call( node, node, behavior.o );
                     updated.push( behavior );
                 }
             })

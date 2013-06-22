@@ -87,13 +87,16 @@ String.implement({
         regexp : (string) pattern match for the arguments
 
     Example
-        > "zebra".sliceArgs( "zebra-eee-ffa" );
+        > "zebra".sliceArgs( "zebra-eee-ffa" ); //returns ['eee','ffa']
+        > "zebra".sliceArgs( "horse" );  //returns []
 
     */
     sliceArgs: function(args, regexp){
 
         if( args.grab /*typeOf(args)=='element'*/) args = args.className;
-        if( !regexp) regexp = "(?:-\\w+)*";
+
+        if( !regexp) regexp = "(?:-\\w+)*"; //default '-' separated arguments
+
         return ( args.match( RegExp(this+regexp) )||[''] )[0].split('-').slice(1);
 
     }
@@ -293,7 +296,7 @@ Element.implement({
     Note:
         Checkboxes will return true/false depending on the default checked status.
         ( input.checked to read actual value )
-        The value returned in the POST will be input.get('value')
+        The value returned in a POST will be input.get('value')
         and is depending on the value set by the 'value' attribute (optional)
 
     Returns:
@@ -322,10 +325,10 @@ Element.implement({
 
             case 'input':
 
-                //if( ('checkbox'==type) && (self.checked != self.defaultChecked)) break;
-                if('checkbox'==type){ return self.defaultChecked; }
+                //if( ( 'checkbox'==type ) && (self.checked != self.defaultChecked)) break;
+                if( type == 'checkbox' ){ return self.defaultChecked; }
 
-                if(    !'radio|hidden|text|password'.test(type) ){ break; }
+                if( !'radio|hidden|text|password'.test(type) ){ break; }
 
             case 'textarea':
 

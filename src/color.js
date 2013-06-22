@@ -22,7 +22,7 @@ Returns:
 Examples:
     > var black = new Color('#000');
     > var purple = new Color([255,0,255]);
-    > var azure = new Color('red'); //support 16 standard vga color names
+    > var red = new Color('red'); //support 16 standard vga color names
     > var azure = new Color('azure'); //support all 130 additional X11 color names
 
 */
