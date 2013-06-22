@@ -15,51 +15,47 @@ Arguments
 */
 function HighlightWord( node, query, highlight ){
 
-    var words,
-
-        //recursive node processing function
-        walk = function(node, regexp){
+    //recursive node processing function
+    function walk(node, regexp){
 
         if( node ){
 
-            var s,tmp, n, nn = node.firstChild;
+            var s, n, nn = node.firstChild;
 
-            //process all children
+            //process all DOM children
             while( n = nn ){
                 nn = n.nextSibling; //prefetch the next sibling, cause the dom tree is modified
-                walk(n,watchWord);
+                walk( n, regexp );
             }
 
-            if( node.nodeType == 3 /* text-nodes */ ){
+            if( node.nodeType == 3 /* this is a text-node */ ){
 
                 s = node.innerText || node.textContent || '';
-
                 s = s.replace(/</g,'&lt;'); // pre text elements may contain <xml> element
 
                 if( regexp.test( s ) ){
 
-                    tmp = new Element('span',{
+                    n = new Element('span',{
                         html: s.replace(regexp, highlight || "<span class='highlight'>$1</span>")
                     });
-
                     frag = document.createDocumentFragment();
-                    while( tmp.firstChild ) frag.appendChild( tmp.firstChild );
+                    while( n.firstChild ) frag.appendChild( n.firstChild );
 
                     node.parentNode.replaceChild( frag, node );
+                    n.dispose(); //avoid dom-leaks
 
-                    tmp.dispose(); //avoid dom-leaks
                 }
             }
         }
     };
 
-    //if( !query && document.referrer.test("(?:\\?|&)(?:q|query)=([^&]*)","g") ){ query = RegExp.$1; }
+    var words;
 
+    //if( !query && document.referrer.test("(?:\\?|&)(?:q|query)=([^&]*)","g") ){ query = RegExp.$1; }
     //if( query ){
     if( query || query = (document.referrer.match(/(?:\?|&)(?:q|query)=([^&]*)/)||[,''])[1] ){
 
-        console.Log("highlight word : ",query);
-
+        //console.Log("highlight word : ",query);
         words = decodeURIComponent(query)
                     .stripScripts() //xss vulnerability
                     .replace( /\+/g, " " )
