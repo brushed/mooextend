@@ -22,19 +22,17 @@ function HighlightWord( node, query, highlight ){
 
         if( node ){
 
+            var s,tmp, n, nn = node.firstChild;
+
             //process all children
-            for( var nn=null, n = node.firstChild; n ; n = nn ){
-                // prefetch nextSibling cause the tree will be modified
-                nn = n. nextSibling;
-                walk(n, matchWord);
+            while( n = nn ){
+                nn = n.nextSibling; //prefetch the next sibling, cause the dom tree is modified
+                walk(n,watchWord);
             }
 
-            // continue on text-nodes, not yet highlighted
-            if( node.nodeType == 3 ){
+            if( node.nodeType == 3 /* text-nodes */ ){
 
-                var s = node.innerText || node.textContent || '',
-                    tmp,
-                    frag;
+                s = node.innerText || node.textContent || '';
 
                 s = s.replace(/</g,'&lt;'); // pre text elements may contain <xml> element
 
@@ -55,9 +53,12 @@ function HighlightWord( node, query, highlight ){
         }
     };
 
-    if( !query && document.referrer.test("(?:\\?|&)(?:q|query)=([^&]*)","g") ){ query = RegExp.$1; }
+    //if( !query && document.referrer.test("(?:\\?|&)(?:q|query)=([^&]*)","g") ){ query = RegExp.$1; }
 
-    if( query ){
+    //if( query ){
+    if( query || query = (document.referrer.match(/(?:\?|&)(?:q|query)=([^&]*)/)||[,''])[1] ){
+
+        console.Log("highlight word : ",query);
 
         words = decodeURIComponent(query)
                     .stripScripts() //xss vulnerability
