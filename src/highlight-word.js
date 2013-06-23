@@ -42,21 +42,19 @@ function HighlightWord( node, query, highlight ){
                     while( n.firstChild ) frag.appendChild( n.firstChild );
 
                     node.parentNode.replaceChild( frag, node );
-                    n.dispose(); //avoid dom-leaks
+                    n = 0;
 
                 }
             }
         }
     };
 
-    var words;
-
     //if( !query && document.referrer.test("(?:\\?|&)(?:q|query)=([^&]*)","g") ){ query = RegExp.$1; }
     //if( query ){
     if( query || query = (document.referrer.match(/(?:\?|&)(?:q|query)=([^&]*)/)||[,''])[1] ){
 
         //console.Log("highlight word : ",query);
-        words = decodeURIComponent(query)
+        var words = decodeURIComponent(query)
                     .stripScripts() //xss vulnerability
                     .replace( /\+/g, " " )
                     .replace( /\s+-\S+/g, "" )
