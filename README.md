@@ -17,6 +17,18 @@ Some extensions for native data-types in mootools:
 	- min() : return minimum value of an array of numbers
 	- max() : return maximum value of an array of numbers
 
+- Array.naturalSort(column) : support natural sorting on one- and two-dimensional arrays.
+    Sorts the elements of an array, using a more 'natural' algoritm.
+    Keep a cache of the prepared sortable values.
+
+    Example:
+
+        [0, 1, "017", 6, , 21 ].naturalSort();  //[0, 1, 6, "017", 21]
+
+        [[6,"chap 1-14"],["05","chap 1-4"]].naturalSort(1); //[["05","chap 1-4"],[6,"chap 1-14"]]
+
+
+
 - Element
 	- ifClass(condition, trueClass, falseClass) : add/remove css classes based on a condition
 	- addHover(clazz): provide support for :hover effects on all elements, also in IE.
