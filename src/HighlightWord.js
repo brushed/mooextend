@@ -51,7 +51,7 @@ function HighlightWord( node, query, highlight ){
 
     //if( !query && document.referrer.test("(?:\\?|&)(?:q|query)=([^&]*)","g") ){ query = RegExp.$1; }
     //if( query ){
-    if( query || query = (document.referrer.match(/(?:\?|&)(?:q|query)=([^&]*)/)||[,''])[1] ){
+    if( query || (query = (document.referrer.match(/(?:\?|&)(?:q|query)=([^&]*)/)||[,''])[1]) ){
 
         //console.Log("highlight word : ",query);
         var words = decodeURIComponent(query)

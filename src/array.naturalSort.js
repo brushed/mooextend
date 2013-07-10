@@ -39,8 +39,8 @@
 
         var num=[], dmy=[], kmgt=[], nat=[], val, i, len = thisArray.length, isNode,
 
-            //split string in sequences of digits, separated by ., and alpha-strings
-            reNAT = /(\.\d+)|(\d+(\.\d+)?)|([^\d.]+)|(\.\D+)|(\.$)/g,
+            //split string in sequences of digits
+            reNAT = /([-+]?\d+)|(\D+)/g,
 
             KMGTre = /(:?[\d.,]+)\s*([kmgt])b/,    //eg 2 MB, 4GB, 1.2kb, 8Tb
             KMGTmul = { k:1, m:1e3, g:1e6, t:1e9 },
@@ -65,19 +65,23 @@
 
             //2. Convert and store in type specific arrays (num,dmy,kmgt,nat)
 
+            //some corner cases: numbers with leading zero's, confusing date string
+            if( /(?:^0\d+)|(^[^+-\d]+\d+$)/.test(val) ){ num=0; dmy=0; }
+
             if( num && isNaN( num[i] = +val ) ) num=0;
 
             if( nat && !( nat[i] = val.match(reNAT) ) ) nat=0;
 
             //Only strings with non-numeric values
-            //Known limitation: Date.parse also accepts "<any string>MM" or "<any string>YYYY"
-            if( dmy && ( num || isNaN( dmy[i] = Date.parse(val) ) ) ) dmy=0;
+           if( dmy && ( num || isNaN( dmy[i] = Date.parse(val) ) ) ) dmy=0;
 
             if( kmgt && isNaN( kmgt[i] = KMGTparse(val) ) ) kmgt=0;
 
         }
 
-        console.log("[",kmgt?"kmgt":dmy?"dmy":num?"num":nat?"nat":'no conversion',"] ", kmgt||dmy||num||nat||thisArray);
+        //console.log("[",kmgt?"kmgt":dmy?"dmy":num?"num":nat?"nat":'no conversion',"] ");
+        //console.log(nat);
+        //console.log(kmgt||dmy||num||nat||thisArray);
 
         return kmgt || dmy || num || nat || thisArray;
 
@@ -122,19 +126,18 @@
         var thisArray = this, sortable, i, len = thisArray.length,
             cache = 'cache';
 
-        // read sortable cache or make a new sortable array
-        if( isNaN(column) ){            // 1D array : [ .. ]
+        //1. read sortable cache or make a new sortable array
+        if( isNaN(column) ){    // 1D array : [ .. ]
 
             sortable = thisArray[cache] || [];
 
-            if( column/*=force*/ || !sortable.length/*==0*/ ){
+            if( column/*==force*/ || !sortable.length/*==0*/ ){
 
-                sortable = thisArray[cache] = makeSortable(thisArray); /* cache sortable values */
+                sortable = thisArray[cache] = makeSortable(thisArray);
 
             }
 
-
-        } else {                        // 2D array : [[..],[..],..]
+        } else {    // 2D array : [[..],[..],..]
 
             sortable = thisArray[0][cache] || [];
 
@@ -153,12 +156,9 @@
 
         }
 
-        //wrap [sortable-value] into [item, sortable-value]
+        //2. Do the actual sorting
         for( i=0; i<len; i++) sortable[i] = [ thisArray[i], sortable[i] ];
-
         sortable.sort( naturalCmp );
-
-        //unwrap sorted items
         for( i=0; i<len; i++) thisArray[i] = sortable[i][0];
 
         return thisArray;

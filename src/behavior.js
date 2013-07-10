@@ -35,7 +35,7 @@ var Behavior = new Class({
     update: function(){
 
         //console.log(this.behaviors);
-        var cache = "_behaviorUpdated",updated, type;
+        var cache = "_bhvrOK",updated, type;
 
         this.behaviors.each( function( behavior ){
 
