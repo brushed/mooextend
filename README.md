@@ -27,8 +27,7 @@ Some extensions for native data-types in mootools:
 - Element.Extend
 	- ifClass(condition, trueClass, falseClass) : add/remove css classes based on a condition
 	- addHover(clazz): provide support for :hover effects on all elements, also in IE.
-	- onHover(parent) : convert an element into a hover menu
-	- hoverUpdate() : reposition hover menu with its parent
+	- onHover(parent) : create hoverable dropdown menu
 	- getDefaultValue(): get default value of a form element
     - observe(callback, options) : delayed on-change event for input/textarea elements
 
