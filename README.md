@@ -30,8 +30,7 @@ Some extensions for native data-types in mootools:
 	- onHover(parent) : convert an element into a hover menu
 	- hoverUpdate() : reposition hover menu with its parent
 	- getDefaultValue(): get default value of a form element
-
-- Element.Observer : delayed on-change event for input/textarea elements
+    - observe(callback, options) : delayed on-change event for input/textarea elements
 
 - Element.Placeholder : fallback support for html5 placeholder attribute
 
