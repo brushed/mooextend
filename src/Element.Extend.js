@@ -1,6 +1,6 @@
 /*
 Moo-extend: String-extensions
-    Element: ifClass(), addHover(),hoverOn(), hoverUpdate(), getDefaultValue()
+    Element: ifClass(), addHover(),hoverOn(), hoverUpdate(), getDefaultValue(), observe()
 */
 
 Element.implement({
@@ -41,7 +41,7 @@ Element.implement({
     Examples:
     >    $('thisElement').addHover();
     */
-    addHover: function(clazz){
+    addHover: function( clazz ){
 
         clazz = clazz || 'hover';
 
@@ -57,42 +57,33 @@ Element.implement({
         Convert element into a hover menu.
 
     Arguments:
-        parent - (string,optional) A tag name to match the found element(s) with. A full CSS selector can be passed.
+        parent - (string,optional) A CSS selector to match the hoverable parent element
     */
-    hoverOn: function(parent){
+    hoverOn: function( parent ){
 
         var element = this;
 
         if( parent = element.getParent(parent) ){
 
-             element.store("$hoverparent",parent).set('visibility','visible').fade('hide'); //checkme
+        console.log("hoveron ",element);
+             element.fade('hide');
 
              parent.addEvents({
-                mouseenter: function(){ element.fade(0) },
-                mouseleave: function(){    element.hoverUpdate().fade(0.9) }
+                mouseenter: function(){
+                    //var coor = parent.getCoordinates();
+                    //element.setStyles({left:coor.left, top:coor.top + coor.height});
+                    element.fade(0.9);
+                    parent.addClass('open');
+                },
+                mouseleave: function(){
+                    element.fade(0);
+                    parent.removeClass('open');
+                }
             });
         }
         return element;
 
     },
-
-    /*
-    Function: hoverUpdate
-        Reposition the menu
-        Checkme : replace by css ?
-    */
-    hoverUpdate: function(){
-
-        var parent = this.get("$hoverparent");
-
-        if( parent ){
-            parent = parent.getCoordinates();
-            this.setStyles({ left:parent.left, top:parent.top + parent.height });
-        }
-        return this;
-
-    },
-
 
 
     /*
@@ -144,6 +135,90 @@ Element.implement({
             default: return false;
 
         }
+
+    },
+
+    /*
+    Function: wrapChildren
+        Wraps a list of children into blocks.
+        Blocks are delimitted by DOM elements matching a certain criteria
+
+    DOM Structure before
+        a
+        b
+        b
+        a
+        b
+    DOM Structure after  .wrapChildren(a,w)
+        w
+            b
+            b
+        w
+            b
+
+    Example:
+    >   el.wrapChildren(/hr/i,'div.col');
+    >   el.wrapChildren(/h[1-6]/i,'div.col');
+    >   el.wrapChildren( element.getTag(), 'div.tab');
+    */
+    wrapChildren:function(filter, wrapper){
+
+        var next;
+        wrapper = new Element(wrapper).inject(this,'top');
+
+        while( next = wrapper.nextSibling ){
+
+            if( (next.nodeType != 3) && document.id(next).match(filter) ){
+
+                wrapper = wrapper.clone().replaces(next);
+
+            } else {
+
+                wrapper.appendChild( next );
+
+            }
+
+        }
+        console.log(typeOf(wrapper));
+        wrapper.destroy();
+        return this;
+    },
+
+    /*
+    Function: observe
+        Observe a dom element for changes, and trigger a callback function.
+
+    Arguments:
+        fn - callback function
+        options - (object)
+        options.event - (string) event-type to observe, default = 'keyup'
+        options.delay - (number) timeout in ms, default = 300ms
+
+    Example:
+    >    $(formInput).observe(function(){
+    >        alert('my value changed to '+this.get('value') );
+    >    });
+
+    */
+    observe: function(fn, options){
+
+        var element = this,
+            value = element.value,
+            timer = null;
+        options=Object.merge({event:'keyup',delay:300})
+
+        return element.set({autocomplete:'off'}).addEvent(options.event, function(){
+
+            var v = element.value;
+
+            if( v != value ){
+                value = v;
+                //console.log('observer ',v);
+                clearTimeout( timer );
+                timer = fn.delay( options.delay, element );
+            }
+
+        });
 
     }
 

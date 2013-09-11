@@ -10,6 +10,8 @@
         rows.naturalSort( 3 );
 
  */
+/*jshint forin:false, noarg:true, noempty:true, undef:true, unused:true, plusplus:false, immed:false, browser:true, mootools:true */
+
 !function(){
 
     /*
@@ -62,18 +64,17 @@
             //retrieve the value and convert to string
             val = (''+(isNode ? val.get('text') || val.get('title') : val)).trim();
 
-
             //2. Convert and store in type specific arrays (num,dmy,kmgt,nat)
 
             //some corner cases: numbers with leading zero's, confusing date string
-            if( /(?:^0\d+)|(^[^+-\d]+\d+$)/.test(val) ){ num=0; dmy=0; }
+            if( /(?:^0\d+)|(^[^+-\d]+\d+$)/.test(val) ){ num=dmy=0; }
 
             if( num && isNaN( num[i] = +val ) ) num=0;
 
             if( nat && !( nat[i] = val.match(reNAT) ) ) nat=0;
 
             //Only strings with non-numeric values
-           if( dmy && ( num || isNaN( dmy[i] = Date.parse(val) ) ) ) dmy=0;
+            if( dmy && ( num || isNaN( dmy[i] = Date.parse(val) ) ) ) dmy=0;
 
             if( kmgt && isNaN( kmgt[i] = KMGTparse(val) ) ) kmgt=0;
 
@@ -106,7 +107,7 @@
         if( typeof a !='object' ) return (a<b) ? -1 : (a>b) ? 1 : 0;
         //if( !a.length ) return a.localeCompare(b);
 
-        while( aa = a[i] ){
+        while( (aa = a[i]) ){
 
             if( !( bb = b[i++] ) ) return 1; //fixme
 

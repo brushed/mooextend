@@ -43,12 +43,14 @@ String.implement({
     > "this is a long string".trunc(7,'__') === "this is__"
     */
     trunc: function (size, elips){
+
         return this.slice(0, size-1) + ((this.length<size) ? '' : (elips||'…'));
+
     },
 
     /*
     Function: xsubs (extended Substitute)
-        Equal to substitute(), but with support for anonymous arguments.
+        Equal to substitute(), but also supports anonymous arguments.
 
         Named arguments:
         >    "Hello {text}".xsubs({text:"world"}) ==>  "Hello world"

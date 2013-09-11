@@ -35,7 +35,7 @@ var Behavior = new Class({
     update: function(){
 
         //console.log(this.behaviors);
-        var cache = "_bhvrOK",updated, type;
+        var cache = "_bhvr", updated, type;
 
         this.behaviors.each( function( behavior ){
 
@@ -45,7 +45,7 @@ var Behavior = new Class({
 
                 if ( updated.indexOf(behavior) == -1 ){
 
-                    // console.log( typeOf(behavior.b) );
+                    //console.log( behavior.s, typeOf(behavior.b) );
                     type = typeOf(behavior.b);
                     //if( type == 'string' ) node[behavior.b](behavior.o);
                     if( type == 'class'){ new behavior.b(node, behavior.o); }
