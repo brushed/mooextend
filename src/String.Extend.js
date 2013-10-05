@@ -4,8 +4,17 @@ Moo-extend: String-extensions
 */
 String.implement({
 
-    /* fix mootools implementation , supporting i18n chars such as éàè... */
+    /*
+    Function: capitalize
+        Converts the first letter of each word in a string to uppercase.
+
+    Example:
+    >   "i like cookies".capitalize() === 'I Like Cookies'
+    >   "je vais à l'école".capitalize() === 'Je Vais À L'école'   //not "Je Vais à L'éCole"
+    */
     capitalize: function(){
+        //fix mootools implementation , supporting i18n chars such as éàè, not matched by \b
+		//return String(this).replace(/\b[a-z]/g, function(match){
         return this.replace(/(\s|^)\S/g, function(match){
             return match.toUpperCase();
         });
@@ -48,6 +57,48 @@ String.implement({
 
     },
 
+
+    /*
+    Function: localize
+        Localize a string with optional parameters. (indexed or named)
+
+    Require:
+        I18N - (global hash) repository of {{name:value}} pairs
+            name - starts with a prefix {{javascript.}}
+            value - (server generated) localized string, with optional {parameters}
+                in curly braces
+
+    Examples:
+        (start code)
+        //initialize the translation strings
+        String.I18N = {
+            "javascript.moreInfo":"More",
+            "javascript.imageInfo":"Image {0} of {1}",  //indexed parms
+            "javascript.imageInfo2":Image {imgCount} of {totalCount}"   //named parms
+            "javascript.curlyBraces":"Show \{Curly Braces}",  //escaped curly braces
+        }
+        String.I18N.PREFIX="javascript.";
+
+        "moreInfo".localize() === "More";
+        "imageInfo".localize(2,4) ===  "Image 2 of 4"
+        "imageInfo2".localize({totalCount:4, imgCount:2}) === "Image 2 of 4"
+        "curlyBraces".localize() === "Show {Curly Braces}"
+
+        (end)
+
+    */
+    localize: function( params ){
+
+        var I18N = String.I18N;
+
+        return ( I18N[I18N.PREFIX + this] || this ).substitute(
+
+            ( typeOf(params) == 'object' ) ? params : Array.from(arguments)
+
+        );
+
+    },
+
     /*
     Function: xsubs (extended Substitute)
         Equal to substitute(), but also supports anonymous arguments.
@@ -68,27 +119,31 @@ String.implement({
 
     /*
     Function: sliceArgs
-        Parse the arguments of a string or an element's class-name.
-        Command pattern: <prefix>(-arg1)(-arg2)...
+        Parse the command arguments of a string or an element's class-name.
+        Pattern: <command>(-arg1)(-arg2)...
         Returns an array of arguments.
-        > <command>.sliceArgs( args-string | element-with-classname );
+
+        > <command>.sliceArgs( args (, regexp) );
 
     Arguments:
-        object : (string) or (dom-element)
-        regexp : (string) pattern match for the arguments
+        args : (string) or (dom-element with classname )
+        regexp : (optional string) pattern match for the arguments, defaults (-\w+)*
 
     Example
         > "zebra".sliceArgs( "zebra-eee-ffa" ); //returns ['eee','ffa']
-        > "zebra".sliceArgs( "horse" );  //returns []
+        > "zebra".sliceArgs( "horse" );  //returns null
+        > "zebra".sliceArgs( "zebra" );  //returns []
+
 
     */
     sliceArgs: function(args, regexp){
 
         if( args.grab /*isElement*/ ) args = args.className;
-
         if( !regexp) regexp = "(?:-\\w+)*"; //default '-' separated arguments
 
-        return ( args.match( RegExp(this+regexp) )||[''] )[0].split('-').slice(1);
+        args = args.match( /^[^-]+(-[^-]+)*/ );
+console.log(args);
+        return args && (args.shift() == this) && args.split('-');
 
     }
 

@@ -1,6 +1,6 @@
 /*
 Moo-extend: String-extensions
-    Element: ifClass(), addHover(),hoverOn(), hoverUpdate(), getDefaultValue(), observe()
+    Element: ifClass(), addHover(),onHover(), hoverUpdate(), getDefaultValue(), observe()
 */
 
 Element.implement({
@@ -53,38 +53,54 @@ Element.implement({
     },
 
     /*
-    Function: hoverOn
+    Function: onHover
         Convert element into a hover menu.
 
     Arguments:
         parent - (string,optional) A CSS selector to match the hoverable parent element
+
+    Example
+    > $('li.dropdown-menu').onHover('ul');
     */
-    hoverOn: function( parent ){
+    onHover: function( parent ){
 
         var element = this;
 
         if( parent = element.getParent(parent) ){
 
-        console.log("hoveron ",element);
              element.fade('hide');
 
              parent.addEvents({
-                mouseenter: function(){
-                    //var coor = parent.getCoordinates();
-                    //element.setStyles({left:coor.left, top:coor.top + coor.height});
-                    element.fade(0.9);
-                    parent.addClass('open');
-                },
-                mouseleave: function(){
-                    element.fade(0);
-                    parent.removeClass('open');
-                }
+                mouseenter: function(){ element.fade(0.9); this.addClass('open'); },
+                mouseleave: function(){ element.fade(0);   this.removeClass('open'); }
             });
         }
+
         return element;
 
     },
 
+    /*
+    Function: onToggle
+        Convert click event, based on 'data-toggle' attribute.
+
+    Example
+    >   wiki.add('div[data-toggle]', function(element){
+    >       element.onToggle( element.get('data-toggle') );
+    >   })
+
+
+    */
+    onToggle: function( toggle ){
+
+        var element = this;
+
+        if( toggle = document.getElement( toggle ) ){
+            toggle.addEvent('click', function(){ element.toggleClass('active'); })
+        }
+        return element;
+
+    },
 
     /*
     Function: getDefaultValue
@@ -161,27 +177,33 @@ Element.implement({
     >   el.wrapChildren(/h[1-6]/i,'div.col');
     >   el.wrapChildren( element.getTag(), 'div.tab');
     */
-    wrapChildren:function(filter, wrapper){
+    wrapChildren:function(delimitter, wrapper){
 
-        var next;
+        var next, temp, items=[];
         wrapper = new Element(wrapper).inject(this,'top');
 
-        while( next = wrapper.nextSibling ){
+        while( next = wrapper.getNext() ){
 
-            if( (next.nodeType != 3) && document.id(next).match(filter) ){
+            if( next.match(delimitter) ){
 
-                wrapper = wrapper.clone().replaces(next);
+                if( items[0] ){
+                    temp = wrapper;
+                    wrapper = wrapper.clone().replaces(next);
+                    temp.adopt(items);
+                    items = [];
+                }
 
             } else {
 
-                wrapper.appendChild( next );
+                items.push(next);
 
             }
 
         }
-        console.log(typeOf(wrapper));
-        wrapper.destroy();
+
+        items [0] ? wrapper.adopt(items) : wrapper.destroy();
         return this;
+
     },
 
     /*
@@ -200,22 +222,23 @@ Element.implement({
     >    });
 
     */
-    observe: function(fn, options){
+    observe: function(callback, options){
 
         var element = this,
-            value = element.value,
+            value = element.get('value'),
+            event = (options && options.event) || 'keyup',
+            delay = (options && options.delay) || 300,
             timer = null;
-        options=Object.merge({event:'keyup',delay:300})
 
-        return element.set({autocomplete:'off'}).addEvent(options.event, function(){
+        return element.set({autocomplete:'off'}).addEvent(event, function(){
 
-            var v = element.value;
+            var v = element.get('value');
 
             if( v != value ){
                 value = v;
                 //console.log('observer ',v);
                 clearTimeout( timer );
-                timer = fn.delay( options.delay, element );
+                timer = callback.delay(delay, element);
             }
 
         });

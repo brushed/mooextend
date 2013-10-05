@@ -36,12 +36,12 @@ Some extensions for native data-types in mootools:
 
 - Behavior : support css behaviors, based on mootools 2.0
 
-- Localize : tiny localization routines (built for jspwiki)
 
 - String.Extend
 	- capitalize() : fix mootools implementation supporting i18n chars such as éàè..
 	- deCamelize() : convert camelCase string to space-separated set of words
 	- trunc(size, ellipse) : convert string to a maximum length
+    - localize : tiny localization routines (built for jspwiki)
 	- xsubs(object,regexp) : same as substitute() with support for anonymous arguments
 	- sliceArgs(args, regexp): parse the arguments of a string or an element's class-name.
 
