@@ -142,7 +142,7 @@ String.implement({
         if( !regexp) regexp = "(?:-\\w+)*"; //default '-' separated arguments
 
         args = args.match( /^[^-]+(-[^-]+)*/ );
-console.log(args);
+        //console.log(args);
         return args && (args.shift() == this) && args.split('-');
 
     }
