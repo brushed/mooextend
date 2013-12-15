@@ -82,7 +82,7 @@ Element.implement({
 
     /*
     Function: onToggle
-        Convert click event, based on 'data-toggle' attribute.
+        Set/reset '.active' class, based on 'data-toggle' attribute.
 
     Arguments:
         toggle - A CSS selector of the clickable toggle button
@@ -169,9 +169,12 @@ Element.implement({
     },
 
     /*
-    Function: wrapChildren
-        Wraps a list of children into blocks.
-        Blocks are delimitted by DOM elements matching a certain criteria
+    Function: wrapChildren(delimiter, wrapper)
+        Wraps lists of children, which are delimitted by certain DOM elements.
+
+    Arguments
+        - delimiter : (string) css selector matching the delimiting DOM element
+        - wrapper : (string) wrapper dom element
 
     DOM Structure before
         a
@@ -191,14 +194,14 @@ Element.implement({
     >   el.wrapChildren(/h[1-6]/i,'div.col');
     >   el.wrapChildren( element.getTag(), 'div.tab');
     */
-    wrapChildren:function(delimitter, wrapper){
+    wrapChildren:function(delimiter, wrapper){
 
         var next, temp, items=[];
         wrapper = new Element(wrapper).inject(this,'top');
 
         while( next = wrapper.getNext() ){
 
-            if( next.match(delimitter) ){
+            if( next.match(delimiter) ){
 
                 if( items[0] ){
                     temp = wrapper;

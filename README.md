@@ -6,8 +6,8 @@ Alpha - work in progress / use at your own risk
 Some extensions for native data-types in mootools:
 
 - Array.Extend
-	- slick() : convert Array into set of DOM elements. (mini template engine)
-	    Based on the mootools Slick engine. (see https://github.com/Mr5o1/rendAr)
+	- slick() : convert an array of css-selectors into set of DOM elements. 
+	    (mini template engine) Based on the mootools Slick engine. (see https://github.com/Mr5o1/rendAr)
 	- min() : return minimum value of an array of numbers
 	- max() : return maximum value of an array of numbers
 
@@ -22,7 +22,7 @@ Some extensions for native data-types in mootools:
         [[6,"chap 1-14"],["05","chap 1-4"]].naturalSort(1); //[["05","chap 1-4"],[6,"chap 1-14"]]
 
 
-- Autofocus : mimimc html5 autofocus functionality
+- Autofocus : mimic html5 autofocus functionality
 
 
 - Element.Extend
@@ -31,7 +31,7 @@ Some extensions for native data-types in mootools:
 	- onHover(parent) : create hoverable dropdown menu
 	- onToggle(toggle,active): Set/reset '.active' class, based on 'data-toggle' attribute
 	- getDefaultValue(): get default value of a form element
-	- wrapChildren(delimitter,wrapper): wrap a lists of children, delimitted by a certain DOM element
+	- wrapChildren(delimiter,wrapper): wrap a lists of children, delimited by a certain DOM element
     - observe(callback, options) : delayed on-change event for input/textarea elements
 
 
