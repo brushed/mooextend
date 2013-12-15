@@ -1,6 +1,6 @@
 /*
 Class: Placeholder
-    Backwards compatible handling of the html5 'placeholder' attribute.
+    Polyfill for non-html5 browsers.
 
 DOM structure:
 >    <input name="search" placeholder="Search..." />
@@ -12,12 +12,13 @@ Example:
 
 Element.implement({
 
-    placeholder: ('placeholder' in document.createElement('input')) ? function(){} : function(){
+    placeholderX: ('xxplaceholder' in document.createElement('input')) ? function(){} : function(){
 
         var element = this,
             span = new Element('span.placeholder[role=display]',{
                 text: element.placeholder,
                 styles: {
+                    position: 'relative',
                     top: element.offsetTop,
                     left: element.offsetLeft
                 }
@@ -34,3 +35,5 @@ Element.implement({
     }
 
 });
+
+

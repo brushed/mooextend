@@ -80,7 +80,7 @@
 
         }
 
-        //console.log("[",kmgt?"kmgt":dmy?"dmy":num?"num":nat?"nat":'no conversion',"] ");
+        console.log("[",kmgt?"kmgt":dmy?"dmy":num?"num":nat?"nat":'no conversion',"] ");
         //console.log(nat);
         //console.log(kmgt||dmy||num||nat||thisArray);
 
@@ -127,6 +127,7 @@
         var thisArray = this, sortable, i, len = thisArray.length,
             cache = 'cache';
 
+console.log('naturalSort',column,force)
         //1. read sortable cache or make a new sortable array
         if( isNaN(column) ){    // 1D array : [ .. ]
 
@@ -157,6 +158,7 @@
 
         }
 
+console.log(this.cache);
         //2. Do the actual sorting
         for( i=0; i<len; i++) sortable[i] = [ thisArray[i], sortable[i] ];
         sortable.sort( naturalCmp );

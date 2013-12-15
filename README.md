@@ -6,7 +6,8 @@ Alpha - work in progress / use at your own risk
 Some extensions for native data-types in mootools:
 
 - Array.Extend
-	- rendAr() : based on https://github.com/Mr5o1/rendAr
+	- slick() : convert Array into set of DOM elements. (mini template engine)
+	    Based on the mootools Slick engine. (see https://github.com/Mr5o1/rendAr)
 	- min() : return minimum value of an array of numbers
 	- max() : return maximum value of an array of numbers
 
@@ -28,14 +29,19 @@ Some extensions for native data-types in mootools:
 	- ifClass(condition, trueClass, falseClass) : add/remove css classes based on a condition
 	- addHover(clazz): provide support for :hover effects on all elements, also in IE.
 	- onHover(parent) : create hoverable dropdown menu
+	- onToggle(toggle,active): Set/reset '.active' class, based on 'data-toggle' attribute
 	- getDefaultValue(): get default value of a form element
+	- wrapChildren(delimitter,wrapper): wrap a lists of children, delimitted by a certain DOM element
     - observe(callback, options) : delayed on-change event for input/textarea elements
+
 
 - Element.Placeholder : fallback support for html5 placeholder attribute
 
 
 - Behavior : support css behaviors, based on mootools 2.0
-
+    - add(selector, behavior, options,once) : add behavior, which is invoked for each matching element 
+    - once(selector, behavior, options) : add behavior, which is invoked once with an array of all matching elements
+    - update() : invoke all behaviors
 
 - String.Extend
 	- capitalize() : fix mootools implementation supporting i18n chars such as éàè..
@@ -43,5 +49,7 @@ Some extensions for native data-types in mootools:
 	- trunc(size, ellipse) : convert string to a maximum length
     - localize : tiny localization routines (built for jspwiki)
 	- xsubs(object,regexp) : same as substitute() with support for anonymous arguments
+	- slick() : convert CSS-selector into a DOM element. (mini template engine)
+	    Based on the mootools Slick engine. 
 	- sliceArgs(args, regexp): parse the arguments of a string or an element's class-name.
 

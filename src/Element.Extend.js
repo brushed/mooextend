@@ -57,22 +57,22 @@ Element.implement({
         Convert element into a hover menu.
 
     Arguments:
-        parent - (string,optional) A CSS selector to match the hoverable parent element
+        toggle - (string,optional) A CSS selector to match the hoverable toggle element
 
     Example
     > $('li.dropdown-menu').onHover('ul');
     */
-    onHover: function( parent ){
+    onHover: function( toggle ){
 
         var element = this;
 
-        if( parent = element.getParent(parent) ){
+        if( toggle = element.getParent(toggle) ){
 
              element.fade('hide');
 
-             parent.addEvents({
-                mouseenter: function(){ element.fade(0.9); this.addClass('open'); },
-                mouseleave: function(){ element.fade(0);   this.removeClass('open'); }
+             toggle.addEvents({
+                mouseenter: function(){ element.fade(0.9); toggle.addClass('open'); },
+                mouseleave: function(){ element.fade(0);   toggle.removeClass('open'); }
             });
         }
 
@@ -84,6 +84,10 @@ Element.implement({
     Function: onToggle
         Convert click event, based on 'data-toggle' attribute.
 
+    Arguments:
+        toggle - A CSS selector of the clickable toggle button
+        active - CSS classname to toggle this element (default .active )
+
     Example
     >   wiki.add('div[data-toggle]', function(element){
     >       element.onToggle( element.get('data-toggle') );
@@ -91,12 +95,17 @@ Element.implement({
 
 
     */
-    onToggle: function( toggle ){
+    onToggle: function( toggle, active ){
 
         var element = this;
 
-        if( toggle = document.getElement( toggle ) ){
-            toggle.addEvent('click', function(){ element.toggleClass('active'); })
+        if( toggle = document.getElements( toggle ) ){
+
+            toggle.addEvent('click', function(event){
+                event.stop();
+                element.toggleClass( active || 'active');
+            });
+
         }
         return element;
 
@@ -123,7 +132,8 @@ Element.implement({
 
         var self = this,
             type = self.get('type'),
-            values = [];
+            values = [],
+            checkbox; //helpers for checkboxes
 
         switch( self.get('tag') ){
 
@@ -139,8 +149,12 @@ Element.implement({
 
             case 'input':
 
-                //if( ( 'checkbox'==type ) && (self.checked != self.defaultChecked)) break;
-                if( type == 'checkbox' ){ return self.defaultChecked; }
+                //if( type == 'checkbox' ){ return self.defaultChecked; }
+                if( type == 'checkbox' ){ 
+                
+                    return new Element('input[type=checkbox]'+self.defaultChecked?"[checked]":"").value;
+
+                }
 
                 if( !'radio|hidden|text|password'.test(type) ){ break; }
 

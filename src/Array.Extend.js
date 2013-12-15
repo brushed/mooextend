@@ -5,11 +5,12 @@ Moo-extend: String-extensions
 
 
 /*
-Array.rendAr()
-    Mini template engine to generate DOM objects from clean, elegant templates,
+Array.slick()
+    Convert array of css-selectors into one or a set of DOM Elements.
+    Mini template engine to generate DOM elements from clean, elegant css selectors,
     by utilising the Mootools Slick engine.
     Extensions:
-    - "attach" any DOM element to js object properties
+    - "attach" or bind any of the generated DOM elements to a js object properties
 
 Credit: https://github.com/Mr5o1/rendAr by Levi Wheatcroft (leviwheatcroft.com)
 
@@ -18,13 +19,14 @@ Requires:
     - core/Elements
     - core/Array
 
-Example Element.attach():
-   new Element('div',{ attach:this });        //this.element now refers to div
-   new Element('div',{ attach:[this] });    //this.element now refers to div
-   new Element('div',{ attach:[this,'myproperty'] }); //this.myproperty now refers to div
+Example 
+>   new Element('div',{ attach:this });      //this.element now refers to div
+>   new Element('div',{ attach:[this] });    //this.element now refers to div
+>   new Element('div',{ attach:[this,'myproperty'] }); //this.myproperty now refers to div
 
 Example rendAr()
-   ['div',{attach:[this,'myproperty'] }].rendAr();
+>   ['div',{attach:[this,'myproperty'] }].slick();
+>   ['ul', ['li[text=One]','li[text=Two]','li[text=Three]']].slick();
 
 */
 Element.Properties.attach = {
@@ -38,7 +40,7 @@ Element.Properties.attach = {
 
 Array.implement({
 
-    rendAr: function() {
+    slick: function() {
 
         var elements = [],type;
 
@@ -46,9 +48,9 @@ Array.implement({
             type = typeOf(item);
             if ( type == 'elements' ) elements.append(item);
             else if ( item.grab /*isElement*/ ) elements.push(item);
-            else if ( item.big  /*isString*/ ) elements.push(new Element(item));
+            else if ( item.big  /*isString*/ ) elements.push(item.slick());
             else if ( type == 'object' ) elements.getLast().set(item);
-            else if ( item.pop /*isArray*/ ) elements.getLast().adopt(item.rendAr());
+            else if ( item.pop /*isArray*/ ) elements.getLast().adopt(item.slick());
         });
 
         return elements[1] ? new Elements(elements) : elements[0];

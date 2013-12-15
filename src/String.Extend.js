@@ -117,6 +117,19 @@ String.implement({
         return this.substitute(object, regexp);
     },
 
+	/*
+	Function:slick(props)
+		Convert css selector into a new DOM Element
+
+	Example:
+	>	"input#someID.someClass1.someClass2[disabled=true]".slick({text:"Hi"});
+	*/
+	slick:function(props){
+
+		return new Element(this+"", props);
+
+	},
+
     /*
     Function: sliceArgs
         Parse the command arguments of a string or an element's class-name.
@@ -126,7 +139,7 @@ String.implement({
         > <command>.sliceArgs( args (, regexp) );
 
     Arguments:
-        args : (string) or (dom-element with classname )
+        args : (string) or dom-element with classname 
         regexp : (optional string) pattern match for the arguments, defaults (-\w+)*
 
     Example
@@ -134,16 +147,20 @@ String.implement({
         > "zebra".sliceArgs( "horse" );  //returns null
         > "zebra".sliceArgs( "zebra" );  //returns []
 
-
     */
     sliceArgs: function(args, regexp){
 
         if( args.grab /*isElement*/ ) args = args.className;
-        if( !regexp) regexp = "(?:-\\w+)*"; //default '-' separated arguments
+        if( !regexp) regexp = "(^|\\s)"+this+"(-\\w+)*(?:\\s|$)"; //default '-' separated arguments
 
-        args = args.match( /^[^-]+(-[^-]+)*/ );
-        //console.log(args);
-        return args && (args.shift() == this) && args.split('-');
+        console.log("SLICEARGS",regexp, args);
+        
+        var x = args.match( regexp );
+        args = args.match( regexp ); //  /^[^-]+(-[^-]+)*$/ );
+        
+        console.log("SLICEARGS",args[0], x[0].split('-').slice(1)  );
+        
+        return args && args[0].split('-').shift();
 
     }
 
