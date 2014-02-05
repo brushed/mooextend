@@ -51,9 +51,9 @@ var Behavior = new Class({
 
             nodes = $$(behavior.s);
             type = typeOf(behavior.b);
-            console.log("BEHAVIOR ", behavior.once?"ONCE ":"", nodes.length, behavior.s, typeOf(behavior.b) );
+            //console.log("BEHAVIOR ", behavior.once?"ONCE ":"", nodes.length, behavior.s, typeOf(behavior.b) );
 
-            if( behavior.once ){
+            if( behavior.once && nodes[0] ){
 
                 if( type == 'class'){ new behavior.b(nodes, behavior.o); }
                 else if( type == 'function'){ behavior.b(nodes, behavior.o); }

@@ -1,6 +1,6 @@
 /*
-Moo-extend: String-extensions
-    String : capitalize,() deCamelize(), trunc(), xsubs()
+Mootools Extension: String.Extend.js
+	String-extensions: capitalize,() deCamelize(), trunc(), xsubs()
 */
 String.implement({
 
@@ -148,20 +148,37 @@ String.implement({
         > "zebra".sliceArgs( "zebra" );  //returns []
 
     */
-    sliceArgs: function(args, regexp){
+    sliceArgs: function(element, regexp){
 
-        if( args.grab /*isElement*/ ) args = args.className;
+    	var args = element.grab /*isElement*/ ? element.className : element;
+
         if( !regexp) regexp = "(^|\\s)"+this+"(-\\w+)*(?:\\s|$)"; //default '-' separated arguments
 
-        console.log("SLICEARGS",regexp, args);
-        
-        var x = args.match( regexp );
-        args = args.match( regexp ); //  /^[^-]+(-[^-]+)*$/ );
-        
-        console.log("SLICEARGS",args[0], x[0].split('-').slice(1)  );
-        
-        return args && args[0].split('-').shift();
+        args = args.match( regexp );
+        return args && args[0].split('-').slice(1);
 
-    }
+    },
+
+	/*
+	Function: fetchContext    
+		Match an elements classname or string against one of the bootstrap contextual patterns.
+		Supported contexts: default, primary, success, info, warning, danger
+		
+		Return a (string) classname to invoke the contextual colors.
+		
+	Example
+	>	'panel'.fetchContext( 'accordion-danger') => 'panel panel-danger'
+	>	'panel'.fetchContext( 'commentbox-success') => 'panel panel-success'
+
+	*/
+	fetchContext : function(element){
+	
+	    var name = element.grab /*isElement*/ ? element.className : element;
+
+        name = (name.match( /\b(default|primary|success|info|warning|danger)(\b|$)/ )||[,'default'])[1];
+
+		return this+' '+this+'-'+name ;
+		
+	}
 
 });

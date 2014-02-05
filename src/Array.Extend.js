@@ -45,15 +45,39 @@ Array.implement({
         var elements = [],type;
 
         this.each( function(item){
+            if(item != null){ 
             type = typeOf(item);
             if ( type == 'elements' ) elements.append(item);
             else if ( item.grab /*isElement*/ ) elements.push(item);
             else if ( item.big  /*isString*/ ) elements.push(item.slick());
             else if ( type == 'object' ) elements.getLast().set(item);
             else if ( item.pop /*isArray*/ ) elements.getLast().adopt(item.slick());
+            }
         });
 
         return elements[1] ? new Elements(elements) : elements[0];
+    },
+
+    /*
+    Function: scale
+    
+    Example
+        [0,50,100].scale() == [0,0.5,1]
+        [0,50,100].scale(2) == [0,1,2]
+        
+    */
+    scale: function( scale ) {
+
+        var result = [],
+            i, len = this.length,
+            min = this.min(),
+            rmax = this.max() - min;
+
+        if( rmax == 0 ){ rmax = min; min = 0; }
+
+        for( i=0; i<len; i++) result[i] = (scale||1) * (this[i] - min) / rmax;
+
+        return result;
     },
 
     max: function(){ return Math.max.apply(null, this); },

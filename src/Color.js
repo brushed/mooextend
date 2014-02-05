@@ -39,13 +39,14 @@ var RGB = 'rgb',
 
     } else if (typeof color == 'string'){
 
-        if(color.test(/^[\da-f]{3,6}$/)) color = "#"+color;
+        if(color.test(/^[\da-f]{3,6}$/i)) color = "#"+color;
         c0l0r.setStyle('color',''); //reset the template
-        color = ( VGA.test( RegExp(color+"(#\\S+)" ) ) ? RegExp.$1 :
-            color.match(/rgb/) ? color.rgbToHex() :
+        color = ( VGA.test( RegExp(color+"(#\\S+)","i" ) ) ? RegExp.$1 :
+            color.match(/rgb/i) ? color.rgbToHex() :
                 c0l0r.setStyle('color',color).getStyle('color') ).hexToRgb(true);
 
     }
+    if(!color) return null;
     color.rgb = color.slice(0, 3);
     color.hex = color.rgbToHex();
     return Object.append(color, this);
@@ -58,9 +59,9 @@ Color.implement({
         var colors = Array.slice(arguments),
             alpha = ( (typeOf(colors.getLast()) == 'number') ? colors.pop() : 50 )/100,
             alphaI = 1-alpha,
-            rgb = this.slice(), i;
+            rgb = this.slice(), i, color;
 
-        while( colors ){
+        while( colors[0] ){
             color = new Color( colors.shift() );
             for (i=0; i < 3; i++){ rgb[i] = ((rgb[i] * alphaI) + (color[i] * alpha)).round(); }
         };

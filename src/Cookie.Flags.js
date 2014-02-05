@@ -1,6 +1,6 @@
 /*
 Class: Cookie.Flags
-    Descendent of the mootools Cookie class.
+    Extension of the mootools Cookie class.
     It stores the True/False state of a set of dom-elements in a cookie.
 
 Example:

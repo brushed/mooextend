@@ -23,9 +23,46 @@ Element.implement({
     */
     ifClass : function(flag, T_Class, F_Class){
 
-        return  this.addClass(flag?T_Class:F_Class).removeClass(flag?F_Class:T_Class);
+        return this.addClass(flag?T_Class:F_Class).removeClass(flag?F_Class:T_Class);
 
     },
+
+	/*
+	Function: wrapChildren
+		This method moves this Element around its children elements.
+		The Element is moved to the position of the passed element and becomes the parent.
+		All child-nodes are moved to the new element.
+
+	Arguments:
+		el - DOM element.
+
+	Returns:
+		(element) This Element.
+
+	DOM Structure:
+	(start code)
+        //original DOM
+		div#firstElement
+		    <children>
+
+    	//JavaScript
+	    var secondElement = new Element('div#secondElement');
+	    secondElement.wrapChildren($('myFirstElement'));
+
+	    //Resulting HTML
+		div#firstElement
+    		div#secondElement
+            <children>	
+    (end)
+	*/
+	wrapChildren : function(el){
+	
+		while( el.firstChild ){ this.appendChild( el.firstChild ); }
+		el.appendChild( this ) ;
+		return this;
+
+	},
+
 
     /*
     Function: addHover
@@ -74,10 +111,9 @@ Element.implement({
                 mouseenter: function(){ element.fade(0.9); toggle.addClass('open'); },
                 mouseleave: function(){ element.fade(0);   toggle.removeClass('open'); }
             });
+
         }
-
         return element;
-
     },
 
     /*
@@ -85,23 +121,52 @@ Element.implement({
         Set/reset '.active' class, based on 'data-toggle' attribute.
 
     Arguments:
-        toggle - A CSS selector of the clickable toggle button
+        toggle - A CSS selector of one or more clickable toggle button
+            A special selector "buttons" is available for style toggling
+            of a group of checkboxes or radio-buttons.  (ref. Bootstrap)
+        
         active - CSS classname to toggle this element (default .active )
 
     Example
-    >   wiki.add('div[data-toggle]', function(element){
-    >       element.onToggle( element.get('data-toggle') );
-    >   })
-
+    (start code)
+       wiki.add('div[data-toggle]', function(element){
+           element.onToggle( element.get('data-toggle') );
+       })
+    (end)
+    
+    DOM Structure
+    (start code)
+        //normal toggle case
+        div[data-toggle="button#somebutton"](.active) That
+        ..
+        button#somebutton Click here to toggle that
+        
+        //special toggle case with "buttons" selector
+        div.btn-group[data-toggle="buttons"]
+            label.btn.btn-default(.active)
+                input[type="radio"][name="aRadio"] checked='checked' value="One" />
+            label.btn.btn-default(.active)
+                input[type="radio"][name="aRadio"] value="Two" />
+        
+    (end)
 
     */
     onToggle: function( toggle, active ){
 
         var element = this;
 
-        if( toggle = document.getElements( toggle ) ){
+        if( toggle == "buttons" ){
+        
+            (toggle = function(){
+                element.getElements(".active").removeClass("active");
+                element.getElements(":checked !").addClass("active");
+            })();
+            element.addEvent('click', toggle);
+        
+        } else {
 
-            toggle.addEvent('click', function(event){
+            //if(!document.getElements(toggle)[0]){ console.log("toggle error:",toggle); }
+            document.getElements(toggle).addEvent('click', function(event){
                 event.stop();
                 element.toggleClass( active || 'active');
             });
@@ -132,8 +197,7 @@ Element.implement({
 
         var self = this,
             type = self.get('type'),
-            values = [],
-            checkbox; //helpers for checkboxes
+            values = [];
 
         switch( self.get('tag') ){
 
@@ -149,10 +213,9 @@ Element.implement({
 
             case 'input':
 
-                //if( type == 'checkbox' ){ return self.defaultChecked; }
-                if( type == 'checkbox' ){ 
-                
-                    return new Element('input[type=checkbox]'+self.defaultChecked?"[checked]":"").value;
+                if( type == 'checkbox' ){   //checkbox.get-value = returns 'on' on some browsers, T/F on others
+
+                    return ('input[type=checkbox]'+(self.defaultChecked?":checked":"")).slick().get('value');
 
                 }
 
@@ -169,58 +232,62 @@ Element.implement({
     },
 
     /*
-    Function: wrapChildren(delimiter, wrapper)
-        Wraps lists of children, which are delimitted by certain DOM elements.
+    Function: groupChildren(start, grab, replaceFn)
+        groups lists of children, which are delimited by certain DOM elements.
 
     Arguments
-        - delimiter : (string) css selector matching the delimiting DOM element
-        - wrapper : (string) wrapper dom element
+        - start : (string) css selector to match delimiting DOM elements
+        - grab : (string) css selector, grabs a subset of dom elements
+                    and replaces the start element
+        - replacesFn: (callback function) called at the point of replacing the
+                start-element with the grab-element
 
-    DOM Structure before
-        a
+    DOM Structure:
+    (start code)
+        //before groupChildren(start,grab)
+        start
         b
         b
-        a
+        start
         b
-    DOM Structure after  .wrapChildren(a,w)
-        w
+        //after groupChildren(start,grab)
+        grab [data-inherit="{text:.<start.text>.,id:.<start.id>.}"]
             b
             b
-        w
+        grab [data-inherit="{text:.<start.text>.,id:.<start.id>.}"]
             b
 
     Example:
-    >   el.wrapChildren(/hr/i,'div.col');
-    >   el.wrapChildren(/h[1-6]/i,'div.col');
-    >   el.wrapChildren( element.getTag(), 'div.tab');
+    >   el.groupChildren(/hr/i,'div.col');  
+    >   el.groupChildren(/h[1-6]/i,'div.col');
+    >   el.groupChildren( container.getTag(), 'div');
     */
-    wrapChildren:function(delimiter, wrapper){
+    groupChildren:function(start, grab, replacesFn){
 
-        var next, temp, items=[];
-        wrapper = new Element(wrapper).inject(this,'top');
+        var next, 
+            group = grab.slick().inject(this,'top'),
+            firstGroupDone = false;
 
-        while( next = wrapper.getNext() ){
+        //need at least one start element to get going
+        if( this.getElement(start) ){
 
-            if( next.match(delimiter) ){
+            while( next = group.nextSibling ){
+            
+                if( ( next.nodeType!=3 ) && next.match(start) ){  //start a new group
+                    
+                    if( firstGroupDone ){  group = grab.slick(); } //make a new group
+                    if( replacesFn ) replacesFn(group, next); 
+                    group.replaces( next );  //destroys the matched start element
+                    firstGroupDone = true;
 
-                if( items[0] ){
-                    temp = wrapper;
-                    wrapper = wrapper.clone().replaces(next);
-                    temp.adopt(items);
-                    items = [];
+                } else {
+
+                    group.appendChild( next );  //grap all other elements in the group 
+
                 }
-
-            } else {
-
-                items.push(next);
-
             }
-
         }
-
-        items [0] ? wrapper.adopt(items) : wrapper.destroy();
         return this;
-
     },
 
     /*

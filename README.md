@@ -5,9 +5,12 @@ Alpha - work in progress / use at your own risk
 
 Some extensions for native data-types in mootools:
 
+- Accesskey : style DOM elements with 'accesskey' property
+
 - Array.Extend
 	- slick() : convert an array of css-selectors into set of DOM elements. 
 	    (mini template engine) Based on the mootools Slick engine. (see https://github.com/Mr5o1/rendAr)
+    - scale(scale) : scale all values of a (number) array (default scale 0..1)
 	- min() : return minimum value of an array of numbers
 	- max() : return maximum value of an array of numbers
 
@@ -24,6 +27,16 @@ Some extensions for native data-types in mootools:
 
 - Autofocus : mimic html5 autofocus functionality
 
+- Behavior : flexible extension of DOM elements with variour behaviour, based on css-selectors
+    - add(selector, behavior, options,once) : add behavior, which is invoked for each matching element 
+    - once(selector, behavior, options) : add behavior, which is invoked once with an array of all matching elements
+    - update() : invoke all behaviours
+
+- Color : Class for creating and manipulating colors in JavaScript.
+    This is a minimized variant of the Color class, based Mootools.More.
+    It adds supports for html color names. 
+
+- Cookie.Flags : Extension of the mootools Cookie class. It stores the True/False state of a set of dom-elements in a cookie.
 
 - Element.Extend
 	- ifClass(condition, trueClass, falseClass) : add/remove css classes based on a condition
@@ -31,17 +44,17 @@ Some extensions for native data-types in mootools:
 	- onHover(parent) : create hoverable dropdown menu
 	- onToggle(toggle,active): Set/reset '.active' class, based on 'data-toggle' attribute
 	- getDefaultValue(): get default value of a form element
-	- wrapChildren(delimiter,wrapper): wrap a lists of children, delimited by a certain DOM element
+	- groupChildren(start, grab, replaceFn): wraps lists of children, which are delimited by certain DOM elements.
     - observe(callback, options) : delayed on-change event for input/textarea elements
-
+	- wrapChildren(delimiter,wrapper): wrap a lists of children, delimited by a certain DOM element
 
 - Element.Placeholder : fallback support for html5 placeholder attribute
 
+- Form.File, Form.MultipleFile, Request.File :
+    Creates support for a multiple file upload form, based on styles from Bootstrap.
+    Based on https://github.com/arian/mootools-form-upload
 
-- Behavior : support css behaviors, based on mootools 2.0
-    - add(selector, behavior, options,once) : add behavior, which is invoked for each matching element 
-    - once(selector, behavior, options) : add behavior, which is invoked once with an array of all matching elements
-    - update() : invoke all behaviors
+- HighlightQuery : highlight any word or phrase of a previously search query.
 
 - String.Extend
 	- capitalize() : fix mootools implementation supporting i18n chars such as éàè..
@@ -52,4 +65,7 @@ Some extensions for native data-types in mootools:
 	- slick() : convert CSS-selector into a DOM element. (mini template engine)
 	    Based on the mootools Slick engine. 
 	- sliceArgs(args, regexp): parse the arguments of a string or an element's class-name.
+    - fetchContext: retrieve bootstrap state/context from an element's classname
 
+
+- Tips : add a Tip behavior to a set of DOM Elements, styling is based on bootstrap
