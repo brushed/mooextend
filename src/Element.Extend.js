@@ -232,7 +232,7 @@ Element.implement({
     },
 
     /*
-    Function: groupChildren(start, grab, replaceFn)
+    Function: groupChildren(start, grab)
         groups lists of children, which are delimited by certain DOM elements.
 
     Arguments
