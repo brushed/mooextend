@@ -41,15 +41,15 @@ Element.implement({
 
 	DOM Structure:
 	(start code)
-        //original DOM
+        //before
 		div#firstElement
 		    <children>
 
-    	//JavaScript
-	    var secondElement = new Element('div#secondElement');
+    	//javaScript
+	    var secondElement = 'div#secondElement'.slick();
 	    secondElement.wrapChildren($('myFirstElement'));
 
-	    //Resulting HTML
+	    //after
 		div#firstElement
     		div#secondElement
             <children>	

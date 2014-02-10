@@ -1,44 +1,40 @@
 /*
 Class: Cookie.Flags
-    Descendent of the mootools Cookie class.
-    It stores the True/False state of a set of dom-elements in a cookie.
+    Descendent of the Mootools Cookie class.
+    Stores the True/False state of a set of dom-elements in a cookie.
+    Encoding: per element in order of appearance, a character 'T' of 'F' is stored.
+
+    Side-effect: you always FIRST need to get all elements in sequence, to build
+    the internal elements[] array.
+    Then you can change the status flags.
 
 Example:
-> todo
->    var cookie = new Cookie.Flags( 'mycookie_name', {duration:20});
->
->    default_state = false;
->    state = cookie.get(item, default_state); //add item to the cookie-repo ?? checkme...
->
->    cookie.write(item, true);
+(start code)
+    var cookie = new Cookie.Flags( 'mycookie_name', {duration:20});
 
+    default_state = false;
+    state = cookie.get(element_1, default_state); //add item to the cookie-repo ?? checkme...
+    .. repeat this for all dom-elements..
 
+    cookie.write(element_x, true);
+(end)
 */
 Cookie.Flags = new Class({
     Extends: Cookie,
 
     initialize: function(key,options){
+
         var self = this;
-        self.flags = '';
-        self.elements = [];
+        self.flags = ''; //sequence of state-flags, eg 'TTFTFFT'
+        self.elements = []; //array of elements, mapping one on one to the flags[]
         self.parent(key,options);
         self.pims = self.read();
         //console.log(this.key, 'pims:',this.pims);
-    },
 
-    write: function(element, bool){
-        var self = this,
-            flags = self.flags,
-            index = self.elements.indexOf(element);
-
-        if(index >= 0){
-            flags = flags.slice(0,index) + (bool?'T':'F') + flags.slice(index+1);
-            self.parent(flags); //write cookie
-        }
-        //console.log("Cookie.Flags.write", flags, index, bool);
     },
 
     get: function(element, bool){
+
         var self = this,
             cookie = self.pims,
             index = self.flags.length;
@@ -50,7 +46,21 @@ Cookie.Flags = new Class({
         self.elements.push(element);
         //console.log("Cookie.Flags.get", cookie, index, this.flags)
         return bool;
+
+    },
+
+    write: function(element, bool){
+
+        var self = this,
+            flags = self.flags,
+            index = self.elements.indexOf(element);
+
+        if( index >= 0 ){
+            flags = flags.slice(0,index) + (bool?'T':'F') + flags.slice(index+1);
+            self.parent(flags); //write cookie
+        }
+        //console.log("Cookie.Flags.write", flags, index, bool);
+
     }
+
 });
-
-

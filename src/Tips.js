@@ -41,3 +41,33 @@ var Tips = function Tips(elements,options){
 }
 
 
+
+/*TIP position logic
+	position: function(event){
+		
+		var windowPadding={x:0, y:0};
+
+		var size = window.getSize(), 
+		    scroll = window.getScroll(),
+			tip = {x: this.tip.offsetWidth, y: this.tip.offsetHeight},
+			props = {x: 'left', y: 'top'},
+			bounds = {y: false, x2: false, y2: false, x: false},
+			obj = {};
+
+		for (var z in props){
+
+			obj[props[z]] = event.page[z] + this.options.offset[z];
+
+			if (obj[props[z]] < 0) bounds[z] = true;
+
+			if ((obj[props[z]] + tip[z] - scroll[z]) > size[z] - windowPadding[z]){
+
+				obj[props[z]] = event.page[z] - this.options.offset[z] - tip[z];
+				bounds[z+'2'] = true;
+			}
+		}
+
+		this.tip.setStyles(obj);
+	},
+
+*/
