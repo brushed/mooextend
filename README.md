@@ -13,6 +13,8 @@ Some extensions for native data-types in mootools:
     - scale(scale) : scale all values of a (number) array (default scale 0..1)
 	- min() : return minimum value of an array of numbers
 	- max() : return maximum value of an array of numbers
+	- rgb2hsv : convert RGB values into HSV values
+	- hsv2rgb : Convert HSV values into RGB values
 
 - Array.NaturalSort(column) : support natural sorting on one- and two-dimensional arrays.
     Sorts the elements of an array, using a more 'natural' algoritm.
@@ -37,6 +39,9 @@ Some extensions for native data-types in mootools:
     It adds supports for html color names. 
 
 - Cookie.Flags : Extension of the mootools Cookie class. It stores the True/False state of a set of dom-elements in a cookie.
+
+- Date.Extend:
+  - toISOString: convert Date to the ISO8601 format 'yyyy-mm-dd'
 
 - Element.Extend
 	- ifClass(condition, trueClass, falseClass) : add/remove css classes based on a condition
@@ -69,3 +74,20 @@ Some extensions for native data-types in mootools:
 
 
 - Tips : add a Tip behavior to a set of DOM Elements, styling is based on bootstrap
+
+- Textarea : extend the HTML Textarea element with many text selection features
+    - toElement : return the DOM textarea element.
+    - getValue: return the value (text content) of the textarea.
+    - slice: mimics the string slice function on the value (text content) of the textarea.
+    - getFromStart: return the first not selected part of the textarea, till the start of the selection.
+    - getTillEnd: return the last not selected part of the textarea, starting from the end of the selection.
+    - getSelection: return the selected text as a string
+    - setSelectionRange(start,end): select the selection range of the textarea from start to end
+    - getSelectionRange: returns an object describing the textarea selection range.
+    - setSelection: replaces the selection with a new value (concatenation of arguments).
+        On return, the selection is set to the replaced text string.
+    - insertAfter: insert the arguments after the selection, and puts caret after inserted value
+    - isCaretAtStartOfLine: return boolean indicating whether caret is at the start of a line.
+    - getCoordinates: returns the absolute coordinates (px) of the character 
+        at a certain offset in the textarea. Default returns pixel coordinates of the selection.  
+
