@@ -57,7 +57,7 @@ Form.MultipleFile = new Class({
         });
 
         function activateDrop(event, isOn){
-            drop.ifClass(isOn, 'active', '');
+            drop.ifClass(isOn, 'active');
             self.fireEvent( event.type, event );
         };
 
