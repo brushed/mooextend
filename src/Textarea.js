@@ -8,7 +8,7 @@ Class: Textarea
 Example:
     (start code)
     <script>
-        var txta = new Textarea( "mainTextarea" );
+        var ta = new Textarea( "mainTextarea" );
     </script>
     (end)
 */
@@ -21,34 +21,32 @@ var Textarea = new Class({
     initialize: function(el,options){
 
         var self = this,
-            txta = self.ta = $(el),
+            ta = self.ta = document.id(el),
 
             lastValue,
-            lastLength = -1,
             changeFn = function(e){
-                var v = txta.value;
-                if( v.length != lastLength || v !== lastValue ){
+                var v = ta.value;
+                if( v !== lastValue ){
+                    //console.log("TXTA change");
                     self.fireEvent('change', e);
-                    lastLength = v.length;
                     lastValue = v;
                 }
             };
 
         self.setOptions(options);
 
-        txta.addEvents({ change:changeFn, keyup:changeFn });
+        ta.addEvents({ change:changeFn, keyup:changeFn });
 
         //Create shadow div to support pixel measurement of the caret in the textarea
-        //self.taShadow = new Element('div',{
-        //    styles: { position:'absolute', visibility:'hidden', overflow:'auto'/*,top:0, left:0, zIndex:1, white-space:pre-wrap*/ }
-        //})
-        self.taShadow = new Element('div[style=position:absolute;visibility:hidden;overflow:auto]')
-          .inject(txta,'before')
-          .setStyles( txta.getStyles(
+        //Note:this only works ok if the textarea font is monospace
+        self.taShadow = 'div[style=position:absolute;visibility:hidden;overflow:auto]'
+          .slick()
+          .inject(ta,'before')
+          .setStyles( ta.getStyles(
             'font-family0font-size0line-height0text-indent0padding-top0padding-right0padding-bottom0padding-left0border-left-width0border-right-width0border-left-style0border-right-style0white-space0word-wrap'
             .split(0)
         ));
-
+        
         return this;
     },
 
@@ -59,9 +57,9 @@ var Textarea = new Class({
         the element when passed an instance of the class. (mootools 1.2.x)
 
     Example:
-    >    var txta = new Textarea('textarea-element');
-    >    $('textarea-element') == txta.toElement();
-    >    $('textarea-element') == $(txta); //mootools 1.2.x
+    >    var ta = new Textarea('textarea-element');
+    >    $('textarea-element') == ta.toElement();
+    >    $('textarea-element') == $(ta); //mootools 1.2.x
     */
     toElement: function(){
         return this.ta;
@@ -129,23 +127,23 @@ var Textarea = new Class({
     */
     setSelectionRange: function(start, end){
 
-        var txta = this.ta,
+        var ta = this.ta,
             value,diff,range;
 
-        if(!end){ end = start; }
+        if( !end ){ end = start; }
 
-        if( txta.setSelectionRange ){
+        if( ta.setSelectionRange ){
 
-            txta.setSelectionRange(start, end);
+            ta.setSelectionRange(start, end);
 
         } else {
 
-            value = txta.value;
+            value = ta.value;
             diff = value.slice(start, end - start).replace(/\r/g, '').length;
             start = value.slice(0, start).replace(/\r/g, '').length;
 
-            range = txta.createTextRange();
-            range.collapse(1 /*true*/);
+            range = ta.createTextRange();
+            range.collapse( true );
             range.moveEnd('character', start + diff);
             range.moveStart('character', start);
             range.select();
@@ -170,7 +168,7 @@ var Textarea = new Class({
 /* ffs
     getIERanges: function(){
         this.ta.focus();
-        var txta = this.ta,
+        var ta = this.ta,
             range = document.selection.createRange(),
             re = this.createTextRange(),
             dupe = re.duplicate();
@@ -181,34 +179,39 @@ var Textarea = new Class({
 */
     getSelectionRange: function(){
 
-        var txta = this.ta,
-            caret = { start: 0, end: 0 /*, thin: true*/ },
+        var ta = this.ta,
+            start = end = 0,
+            //caret = { start: 0, end: 0 /*, thin: true*/ },
             range, dup, value, offset;
 
-        if( txta.selectionStart!=null ){
+        if( ta.selectionStart!=null ){
 
-            caret = { start: txta.selectionStart, end: txta.selectionEnd };
+            //caret = { start: ta.selectionStart, end: ta.selectionEnd };
+            start = ta.selectionStart;
+            end = ta.selectionEnd;
 
         } else {
 
             range = document.selection.createRange();
-            //if (!range || range.parentElement() != txta){ return caret; }
-            if ( range && range.parentElement() == txta ){
+            //if (!range || range.parentElement() != ta){ return caret; }
+            if ( range && range.parentElement() == ta ){
                 dup = range.duplicate();
-                value = txta.value;
+                value = ta.value;
                 offset = value.length - value.match(/[\n\r]*$/)[0].length;
 
-                dup.moveToElementText(txta);
+                dup.moveToElementText(ta);
                 dup.setEndPoint('StartToEnd', range);
-                caret.end = offset - dup.text.length;
+                //caret.end = offset - dup.text.length;
+                end = offset - dup.text.length;
                 dup.setEndPoint('StartToStart', range);
-                caret.start = offset - dup.text.length;
+                //caret.start = offset - dup.text.length;
+                start = offset - dup.text.length;
             }
         }
 
-        caret.thin = (caret.start==caret.end);
-
-        return caret;
+        //caret.thin = (caret.start==caret.end);
+        //return caret;
+        return { start:start, end:end, thin:start==end };
     },
 
     /*
@@ -224,28 +227,28 @@ var Textarea = new Class({
         Textarea object, with a new selection
 
     Example:
-        > txta.setSelection("new", " value"); //replace selection by 'new value'
+        > ta.setSelection("new", " value"); //replace selection by 'new value'
     */
     setSelection: function(){
 
         var value = Array.from(arguments).join('').replace(/\r/g, ''),
-            txta = this.ta,
-            scrollTop = txta.scrollTop, //cache top
+            ta = this.ta,
+            scrollTop = ta.scrollTop, //cache top
             start,end,v,range;
 
-        if( txta.selectionStart!=null ){
+        if( ta.selectionStart!=null ){
 
-            start = txta.selectionStart;
-            end = txta.selectionEnd;
-            v = txta.value;
-            //txta.value = v.substr(0, start) + value + v.substr(end);
-            txta.value = v.slice(0, start) + value + v.substr(end);
-            txta.selectionStart = start;
-            txta.selectionEnd = start + value.length;
+            start = ta.selectionStart;
+            end = ta.selectionEnd;
+            v = ta.value;
+            //ta.value = v.substr(0, start) + value + v.substr(end);
+            ta.value = v.slice(0, start) + value + v.substr(end);
+            ta.selectionStart = start;
+            ta.selectionEnd = start + value.length;
 
         } else {
 
-            txta.focus();
+            ta.focus();
             range = document.selection.createRange();
             range.text = value;
             range.collapse(1 /*true*/);
@@ -253,9 +256,9 @@ var Textarea = new Class({
             range.select();
 
         }
-        txta.focus();
-        txta.scrollTop = scrollTop;
-        txta.fireEvent('change');
+        ta.focus();
+        ta.scrollTop = scrollTop;
+        ta.fireEvent('change');
         return this;
 
     },
@@ -307,13 +310,14 @@ var Textarea = new Class({
      */
     getCoordinates: function( offset ){
 
-        var txta = this.ta,
+        var ta = this.ta,
             taShadow = this.taShadow,
+            value = ta.value,
             delta = 0,
             el,css,style,t,l,w,h;
 
         //prepare taShadow
-        css = txta.getStyles(['padding-left','padding-right','border-left-width','border-right-width']);
+        css = ta.getStyles(['padding-left','padding-right','border-left-width','border-right-width']);
         for(style in css){ delta +=css[style].toInt() }
 
         //default offset is the position of the caret
@@ -321,15 +325,15 @@ var Textarea = new Class({
 
         el = taShadow.set({
             styles: {
-                width: txta.offsetWidth - delta,
-                height: txta.getStyle('height')  //ensure proper handling of scrollbars - if any
+                width: ta.offsetWidth - delta,
+                height: ta.getStyle('height')  //ensure proper handling of scrollbars - if any
             },
             //FIXME: should we put the full selection inside the <i></i> bracket ? (iso a single char)
-            html: txta.value.slice(0, offset) + '<i>A</i>' + txta.value.slice(offset+1)
+            html: value.slice(0, offset) + '<i>A</i>' + value.slice(offset+1)
         }).getElement('i');
 
-        t = txta.offsetTop + el.offsetTop - txta.scrollTop;
-        l = txta.offsetLeft + el.offsetLeft - txta.scrollLeft;
+        t = ta.offsetTop + el.offsetTop - ta.scrollTop;
+        l = ta.offsetLeft + el.offsetLeft - ta.scrollLeft;
         w = el.offsetWidth;
         h = el.offsetHeight;
         return {top:t, left:l, width:w, height:h, right:l+w, bottom:t+h}
