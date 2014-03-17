@@ -23,6 +23,9 @@ Element.implement({
     */
     ifClass : function(flag, T_Class, F_Class){
 
+        T_Class = T_Class||'';
+        F_Class = F_Class||'';
+
         return this.addClass(flag?T_Class:F_Class).removeClass(flag?F_Class:T_Class);
 
     },
@@ -177,6 +180,33 @@ Element.implement({
 
     },
 
+    /*
+
+    Example:
+    (start code)    
+        wiki.add('input[type=submit][data-modal]', function(element){
+            element.onConfirm( element.get('data-modal') );
+        });
+        
+    (end)
+
+    */
+    onModal:function( message ){
+
+        this.addEvent( this.match('form') ? 'submit' : 'click' , function(e){
+
+            return window.confirm(message);
+            /*
+            TODO
+            build modal dialog
+            modalbody.set('html',message);
+            return modaldialog.show();
+            
+            */            
+
+        })
+    },
+    
     /*
     Function: getDefaultValue
         Returns the default value of a form element.
