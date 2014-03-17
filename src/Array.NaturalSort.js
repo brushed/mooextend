@@ -127,7 +127,7 @@
         var thisArray = this, sortable, i, len = thisArray.length,
             cache = 'cache';
 
-console.log('naturalSort',column,force)
+        //console.log('naturalSort',column,force)
         //1. read sortable cache or make a new sortable array
         if( isNaN(column) ){    // 1D array : [ .. ]
 
@@ -158,7 +158,7 @@ console.log('naturalSort',column,force)
 
         }
 
-console.log(this.cache);
+        console.log(this.cache);
         //2. Do the actual sorting
         for( i=0; i<len; i++) sortable[i] = [ thisArray[i], sortable[i] ];
         sortable.sort( naturalCmp );
