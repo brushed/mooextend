@@ -1,6 +1,6 @@
 /*
 Mootools Extension: String.Extend.js
-	String-extensions: capitalize,() deCamelize(), trunc(), xsubs()
+    String-extensions: capitalize,() deCamelize(), trunc(), xsubs()
 */
 String.implement({
 
@@ -14,7 +14,7 @@ String.implement({
     */
     capitalize: function(){
         //fix mootools implementation , supporting i18n chars such as éàè, not matched by \b
-		//return String(this).replace(/\b[a-z]/g, function(match){
+        //return String(this).replace(/\b[a-z]/g, function(match){
         return this.replace(/(\s|^)\S/g, function(match){
             return match.toUpperCase();
         });
@@ -117,18 +117,18 @@ String.implement({
         return this.substitute(object, regexp);
     },
 
-	/*
-	Function:slick(props)
-		Convert css selector into a new DOM Element
+    /*
+    Function:slick(props)
+        Convert css selector into a new DOM Element
 
-	Example:
-	>	"input#someID.someClass1.someClass2[disabled=true]".slick({text:"Hi"});
-	*/
-	slick:function(props){
+    Example:
+    >    "input#someID.someClass1.someClass2[disabled=true]".slick({text:"Hi"});
+    */
+    slick:function(props){
 
-		return new Element(this+"", props);
+        return new Element(this+"", props);
 
-	},
+    },
 
     /*
     Function: sliceArgs
@@ -150,35 +150,35 @@ String.implement({
     */
     sliceArgs: function(element, regexp){
 
-    	var args = element.grab /*isElement*/ ? element.className : element;
+        var args = element.grab /*isElement*/ ? element.className : element;
 
-        if( !regexp) regexp = "(^|\\s)"+this+"(-\\w+)*(?:\\s|$)"; //default '-' separated arguments
+        if( !regexp) regexp = "(?:^|\\s)("+this+"(?:-\\w+)*)(?:\\s|$)"; //default '-' separated arguments
 
         args = args.match( regexp );
-        return args && args[0].split('-').slice(1);
+        return args && args[1].split('-').slice(1);
 
     },
 
-	/*
-	Function: fetchContext    
-		Match an elements classname or string against one of the bootstrap contextual patterns.
-		Supported contexts: default, primary, success, info, warning, danger
-		
-		Return a (string) classname to invoke the contextual colors.
-		
-	Example
-	>	'panel'.fetchContext( 'accordion-danger') => 'panel panel-danger'
-	>	'panel'.fetchContext( 'commentbox-success') => 'panel panel-success'
+    /*
+    Function: fetchContext    
+        Match an elements classname or string against one of the bootstrap contextual patterns.
+        Supported contexts: default, primary, success, info, warning, danger
+        
+        Return a (string) classname to invoke the contextual colors.
+        
+    Example
+    >    'panel'.fetchContext( 'accordion-danger') => 'panel panel-danger'
+    >    'panel'.fetchContext( 'commentbox-success') => 'panel panel-success'
 
-	*/
-	fetchContext : function(element){
-	
-	    var name = element.grab /*isElement*/ ? element.className : element;
+    */
+    fetchContext : function(element){
+    
+        var name = element.grab /*isElement*/ ? element.className : element;
 
         name = (name.match( /\b(default|primary|success|info|warning|danger)(\b|$)/ )||[,'default'])[1];
 
-		return this+' '+this+'-'+name ;
-		
-	}
+        return this+' '+this+'-'+name ;
+        
+    }
 
 });
