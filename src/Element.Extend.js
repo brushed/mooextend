@@ -30,42 +30,43 @@ Element.implement({
 
     },
 
-	/*
-	Function: wrapChildren
-		This method moves this Element around its children elements.
-		The Element is moved to the position of the passed element and becomes the parent.
-		All child-nodes are moved to the new element.
+    /*
+    Function: wrapChildren
+        This method moves this Element around its children elements.
+        The Element is moved to the position of the passed element and becomes the parent.
+        All child-nodes are moved to the new element.
 
-	Arguments:
-		el - DOM element.
+    Arguments:
+        el - DOM element.
 
-	Returns:
-		(element) This Element.
+    Returns:
+        (element) This Element.
 
-	DOM Structure:
-	(start code)
+    DOM Structure:
+    (start code)
         //before
-		div#firstElement
-		    <children>
+        div#firstElement
+            <children>
 
-    	//javaScript
-	    var secondElement = 'div#secondElement'.slick();
-	    secondElement.wrapChildren($('myFirstElement'));
+        //javaScript
+        var secondElement = 'div#secondElement'.slick();
+        secondElement.wrapChildren($('myFirstElement'));
 
-	    //after
-		div#firstElement
-    		div#secondElement
-            <children>	
+        //after
+        div#firstElement
+            div#secondElement
+            <children>    
     (end)
-	*/
-	wrapChildren : function(el){
-	
-		while( el.firstChild ){ this.appendChild( el.firstChild ); }
-		el.appendChild( this ) ;
-		return this;
+    */
+    /*CHECKME: obsolete ??
+    wrapChildren : function(el){
+    
+        while( el.firstChild ){ this.appendChild( el.firstChild ); }
+        el.appendChild( this ) ;
+        return this;
 
-	},
-
+    },
+    */
 
     /*
     Function: addHover
@@ -121,18 +122,18 @@ Element.implement({
 
     /*
     Function: onToggle
-        Set/reset '.active' class, based on 'data-toggle' attribute.
+        Set/reset '.active' class of an element, based on click events received on 
+        the element referred to by the 'data-toggle' attribute.
 
     Arguments:
-        toggle - A CSS selector of one or more clickable toggle button
-            A special selector "buttons" is available for style toggling
-            of a group of checkboxes or radio-buttons.  (ref. Bootstrap)
-        
-        active - CSS classname to toggle this element (default .active )
+        toggle - A CSS selector of clickable toggle buttons
+            The selector "buttons" is used to style a group of checkboxes or radio-buttons.  (ref. Bootstrap)
+            
+        active - CSS classname to toggle this element (default is '.active' )
 
     Example
     (start code)
-       wiki.add('div[data-toggle]', function(element){
+       wiki.add('[data-toggle]', function(element){
            element.onToggle( element.get('data-toggle') );
        })
     (end)
@@ -140,7 +141,7 @@ Element.implement({
     DOM Structure
     (start code)
         //normal toggle case
-        div[data-toggle="button#somebutton"](.active) That
+        div[data-toggle="button#somebutton"](.active) 
         ..
         button#somebutton Click here to toggle that
         
@@ -157,14 +158,16 @@ Element.implement({
     onToggle: function( toggle, active ){
 
         var element = this;
+        active = active || "active";
 
         if( toggle == "buttons" ){
         
-            (toggle = function(e){
+            toggle = function(){
                 //FIXME: differentiate between radioboxes and checkboxes !!
-                element.getElements(".active").removeClass("active");
-                element.getElements(":checked !").addClass("active");
-            })();
+                element.getElements('.'+active).removeClass(active);
+                element.getElements(':checked !').addClass(active);
+            };
+            toggle();
             element.addEvent('click', toggle);
         
         } else {
@@ -172,7 +175,7 @@ Element.implement({
             //if(!document.getElements(toggle)[0]){ console.log("toggle error:",toggle); }
             document.getElements(toggle).addEvent('click', function(event){
                 event.stop();
-                element.toggleClass( active || 'active');
+                element.toggleClass( active );
             });
 
         }
@@ -181,10 +184,15 @@ Element.implement({
     },
 
     /*
-
+    Function onModal
+        Open a modal dialog with ''message''.
+        Used on forms (submit) or form-elements (click), to get a 
+        confirmation prior to executing the default behaviour of the event.
+        TODO: use DOM based modal dialog rather then JS confirm(..)
+    
     Example:
     (start code)    
-        wiki.add('input[type=submit][data-modal]', function(element){
+        wiki.add('[data-modal]', function(element){
             element.onConfirm( element.get('data-modal') );
         });
         
@@ -201,10 +209,57 @@ Element.implement({
             build modal dialog
             modalbody.set('html',message);
             return modaldialog.show();
-            
-            */            
+            */
 
-        })
+        });
+    },
+    
+    /*
+    Function sticky
+        Simulate 'position:sticky'.
+        Keep the element fixed on the screen, during scrolling.
+        FIXME: only supports top-bottom scrolling.
+    
+    Example:
+    (start code)    
+        //css
+        .sticky {
+            display:block;
+            .transition(background 2s ease);     
+            + .sticky-spacer { .hide; }
+        }
+        .stickyOn {
+            position: fixed;
+            top: 0;
+            z-index: @sticky-index;
+            background: @sticky-bg-color;
+
+            // avoid page-bump when sticky become 'fixed', by adding a spacer with its height
+            + .sticky-spacer { show; }    
+        }
+    
+        wiki.add('.sticky', function(element){ element.onSticky() );  });        
+    (end)
+    */
+    onSticky: function(){
+    
+        var element = this,
+            origOffset = element.getPosition(document.body).y, //get offset relative to the doc.body
+            origWidth = element.offsetWidth,
+            on;
+
+        'div.sticky-spacer'.slick({height:element.offsetHeight}).inject(element,'after');
+
+        //FFS: considering adding throttle to limit event invocations eg 'scroll:throttle'
+        document.addEvent('scroll', function(){
+
+            on = ( window.scrollY >= origOffset );
+
+            element.ifClass( on, 'stickyOn' ).setStyle('width', on ? origWidth : '' );
+            //redo the width of the fixed element, cause 'position:fixed' is relative to the document, 
+            //therefore it may loose inherited box widths (FFS: quid other inherited styles ??)
+
+        });
     },
     
     /*
@@ -307,7 +362,7 @@ Element.implement({
                 if( ( next.nodeType!=3 ) && next.match(start) ){  //start a new group
                     
                     if( firstGroupDone ){  group = grab.slick(); } //make a new group
-                    if( replacesFn ) replacesFn(group, next); 
+                    if( replacesFn ) replacesFn(group, next);
                     group.replaces( next );  //destroys the matched start element
                     firstGroupDone = true;
 
