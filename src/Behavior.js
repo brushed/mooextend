@@ -44,38 +44,41 @@ var Behavior = new Class({
 
     update: function(){
 
-        //console.log(this.behaviors);
-        var cache = "_bhvr", updated, type, nodes;
+        var cache = "_bhvr", updated, type, isClass, isFunction, nodes, node, i=0, j, item, behavior, options;
 
-        this.behaviors.each( function( behavior ){
+        while( item = this.behaviors[i++] ){
 
-            nodes = $$(behavior.s);
-            type = typeOf(behavior.b);
-            //console.log("BEHAVIOR ", behavior.once?"ONCE ":"", nodes.length, behavior.s, typeOf(behavior.b) );
+            //console.log("BEHAVIOR ", item.once?"ONCE ":"", nodes.length, item.s, typeOf(item.b) );
+            nodes = $$(item.s); //selector
+            options = item.o;
+            behavior = item.b;
+            type = typeOf(behavior);
+            isClass = ( type=='class' );
+            isFunction = ( type=='function' );
 
-            if( behavior.once && nodes[0] ){
+            if( item.once && nodes[0] ){
 
-                if( type == 'class'){ new behavior.b(nodes, behavior.o); }
-                else if( type == 'function'){ behavior.b(nodes, behavior.o); }
+                if( isClass ){ new behavior(nodes, options); }
+                else if( isFunction ){ behavior(nodes, options); }
 
             } else {
 
-                nodes.each( function(node){
+                j=0;
+                while( node = nodes[j++] ){
 
                     updated = node[cache] || (node[cache] = []);
 
-                    if ( updated.indexOf(behavior) == -1 ){
+                    if ( updated.indexOf(item) == -1 ){
 
-                        //if( type == 'string' ) node[behavior.b](behavior.o);
-                        if( type == 'class'){ new behavior.b(node, behavior.o); }
-                        else if( type == 'function'){ behavior.b.call(node, node, behavior.o); }
+                        //if( isString ) node[behavior](options);
+                        if( isClass ){ new behavior(node, options); }
+                        else if( isFunction ){ behavior.call(node, node, options); }
 
-                        updated.push( behavior );
+                        updated.push( item );
                     }
-                });
+                }
             }
-
-        })
+        }
 
         return this;
     }
