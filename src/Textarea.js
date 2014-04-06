@@ -151,6 +151,7 @@ var Textarea = new Class({
             //textarea.focus();
 
         }
+        ta.fireEvent('change');
         return this;
     },
 
