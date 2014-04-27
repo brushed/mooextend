@@ -49,32 +49,34 @@ var Behavior = new Class({
         while( item = this.behaviors[i++] ){
 
             //console.log("BEHAVIOR ", item.once?"ONCE ":"", nodes.length, item.s, typeOf(item.b) );
-            nodes = $$(item.s); //selector
             options = item.o;
             behavior = item.b;
             type = typeOf(behavior);
             isClass = ( type=='class' );
             isFunction = ( type=='function' );
 
-            if( item.once && nodes[0] ){
+            nodes = $$(item.s); //selector
+            if( nodes[0] ){
 
-                if( isClass ){ new behavior(nodes, options); }
-                else if( isFunction ){ behavior(nodes, options); }
+                if( item.once ){
 
-            } else {
+                    if( isClass ){ new behavior(nodes, options); }
+                    else if( isFunction ){ behavior(nodes, options); }
 
-                j=0;
-                while( node = nodes[j++] ){
+                } else {
 
-                    updated = node[cache] || (node[cache] = []);
+                    for( j=0; node = nodes[j++]; ){
 
-                    if ( updated.indexOf(item) == -1 ){
+                        updated = node[cache] || (node[cache] = []);
+    
+                        if ( updated.indexOf(item) < 0 ){
 
-                        //if( isString ) node[behavior](options);
-                        if( isClass ){ new behavior(node, options); }
-                        else if( isFunction ){ behavior.call(node, node, options); }
+                            //if( isString ) node[behavior](options);
+                            if( isClass ){ new behavior(node, options); }
+                            else if( isFunction ){ behavior.call(node, node, options); }
 
-                        updated.push( item );
+                            updated.push( item );
+                        }
                     }
                 }
             }
