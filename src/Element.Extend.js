@@ -186,14 +186,17 @@ Element.implement({
     /*
     Function onModal
         Open a modal dialog with ''message''.
-        Used on forms (submit) or form-elements (click), to get a 
+        
+        Used on forms (submit) or form-elements (click) to get a 
         confirmation prior to executing the default behaviour of the event.
         TODO: use DOM based modal dialog rather then JS confirm(..)
     
     Example:
-    (start code)    
-        wiki.add('[data-modal]', function(element){
-            element.onConfirm( element.get('data-modal') );
+    (start code)
+        <form data-modal="Are your really sure?" ... > .. </form>
+        
+        behavior.add('[data-modal]', function(element){
+            element.onModal( element.get('data-modal') );
         });
         
     (end)
@@ -218,24 +221,22 @@ Element.implement({
     Function sticky
         Simulate 'position:sticky'.
         Keep the element fixed on the screen, during scrolling.
-        FIXME: only supports top-bottom scrolling.
+        Only supports top-bottom scrolling.
     
     Example:
     (start code)    
         //css
         .sticky {
             display:block;
-            .transition(background 2s ease);     
             + .sticky-spacer { .hide; }
         }
         .stickyOn {
             position: fixed;
             top: 0;
             z-index: @sticky-index;
-            background: @sticky-bg-color;
 
             // avoid page-bump when sticky become 'fixed', by adding a spacer with its height
-            + .sticky-spacer { show; }    
+            + .sticky-spacer { .show; }    
         }
     
         wiki.add('.sticky', function(element){ element.onSticky() );  });        
@@ -243,21 +244,22 @@ Element.implement({
     */
     onSticky: function(){
     
+        //FFS: check for native position:sticky support 
         var element = this,
-            origOffset = element.getPosition(document.body).y, //get offset relative to the doc.body
             origWidth = element.offsetWidth,
+            origOffset = element.getPosition(document.body).y, //get offset relative to the doc.body
             on;
 
-        'div.sticky-spacer'.slick({height:element.offsetHeight}).inject(element,'after');
+        'div.sticky-spacer'.slick({styles:{height:element.offsetHeight}}).inject(element,'after');
 
-        //FFS: considering adding throttle to limit event invocations eg 'scroll:throttle'
+        //FFS: consider adding throttle to limit event invocations eg 'scroll:throttle'
         document.addEvent('scroll', function(){
 
             on = ( window.scrollY >= origOffset );
 
             element.ifClass( on, 'stickyOn' ).setStyle('width', on ? origWidth : '' );
-            //redo the width of the fixed element, cause 'position:fixed' is relative to the document, 
-            //therefore it may loose inherited box widths (FFS: quid other inherited styles ??)
+            //set the width of the fixed element, cause 'position:fixed' is relative to the document, 
+            //therefore the element may loose inherited box widths (FFS: quid other inherited styles ??)
 
         });
     },

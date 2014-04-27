@@ -39,7 +39,7 @@ String.implement({
 
     Arguments:
         size - maximum length of the string, excluding the length of the elips
-        elips - (optional) replaces the truncated part (defaults to '...')
+        ellipsis - (optional) replaces the truncated part (defaults to '...')
 
     Alternative
         Use css propoerty
@@ -51,9 +51,9 @@ String.implement({
     > "this is a long string".trunc(7) === "this is..."
     > "this is a long string".trunc(7,'__') === "this is__"
     */
-    trunc: function (size, elips){
+    trunc: function (size, ellipsis){
 
-        return this.slice(0, size-1) + ((this.length<size) ? '' : (elips||'…'));
+        return this.slice(0, size-1) + ((this.length<size) ? '' : (ellipsis||'…'));
 
     },
 
