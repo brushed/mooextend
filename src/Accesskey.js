@@ -5,29 +5,39 @@ Function: Accesskey
       (eg. underlining the access key)
     - add a suffix to the title attribute of the element with the accesskey
       in square brackets : "title [ key ]"
-      
+
 Arguments:
     element - DOM element
-    template - (string) html template replacement string, default <span class='accesskey'>$1</span>
+    
+Example:
+(start code)
+    new Accesskey( $('#menu) );
+
+    //before
+    <a id="menu" accesskey="m" title="main menu">Menu</a>
+
+    //after
+    <a id="menu" accesskey="m" title="main menu [m]"><span class="accesskey">M</span>enu</a>
+
+(end)
 */
 
-function Accesskey(element, template){
+function Accesskey(element){
 
     var accesskey = 'accesskey',
         key = element.get(accesskey),
         title = element.get('title');
 
-    //we don't do double span.accesskeys
     if( key && !element.getElement('span.'+accesskey) ){
 
         element.set({
             html: element.get('html').replace(
                 RegExp( '('+key+')', 'i'),
-                template || "<span class='"+accesskey+"'>$1</span>"
-            )         
+                "<span class='"+accesskey+"'>$1</span>"
+            )
         });
 
-        if(title){ element.set('title', title + ' [ '+key+' ]'); }
+        if(title){ element.set('title', title + ' ['+key+']'); }
 
         //console.log("ACCESSKEY ::",key, element.get('text'), element.get('title') );
 
