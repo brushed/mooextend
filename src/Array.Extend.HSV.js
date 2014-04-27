@@ -19,10 +19,10 @@ Array.implement({
         } else {
 
             hue = (hue>1) ? 0 : 6 * hue;
-            F = hue|0; //Math.floor(hue);
+            F = hue|0;  //Math.floor(hue);
             A = val * (1 - sat);
             B = val * (1 - sat * (hue-F) );     
-            C = val * (1 - sat * ( 1 - (hue-F)) );
+            C = val + A - B; //val * (1 - sat * ( 1 - (hue-F)) );
             //val = Math.round(val);
 
             r = (F==0) ? [val, C, A] : 
@@ -33,9 +33,8 @@ Array.implement({
 
         }
 
-        console.log('hsv2rgb')
-        return r.map(function(x){return Math.round(x*255); });
-        //return [ r[0]*255, r[1]*255, r[2]*255 ];
+        return r.map( function(x){ return(.5 + x*255)|0; }); ///Math.round()
+        //return [ (.5+r[0]*255)|0, (.5+r[1]*255)|0, (.5+r[2]*255)|0 ];
 
     },
     
@@ -48,10 +47,10 @@ Array.implement({
             g = self[1]/255,
             b = self[2]/255,
             d2,dR,dG,dB,
-            maxVal = Math.max(r, g, b),
+            maxVal = [r,g,b].max(), // Math.max(r, g, b),
             //val = Math.round( maxVal*100 )
             val = maxVal*100, //value - %
-            delta = maxVal - Math.min(r, g, b);
+            delta = maxVal - [r,g,b].min(); //Math.min(r, g, b);
 
                         //if delta==0 : this is a gray, no chroma..
         if( delta ){    //else chromatic data
@@ -71,6 +70,6 @@ Array.implement({
 
         }
         
-        return[ Math.round(hue*360), sat*100, val];
+        return[ (.5+hue*360)|0, sat*100, val];
     }
 });
