@@ -3,13 +3,17 @@ Mootools Extension: Form.File.js
     Creates a multiple file upload form, based on styles from Bootstrap.
     Includes a json-rpc based progress-bar implemention for non-xhr2.0 browsers
     See also: [Form.File.Multiple, Request.File]
+
 Credit:
     Arian Stolwijk, [https://github.com/arian/mootools-form-upload]
+
 */
 !function(){
+
 //"use strict";
 if (!this.Form) this.Form = {};
 var Form = this.Form;
+
 Form.File = new Class({
 
     Implements: [Options, Events],
@@ -17,10 +21,10 @@ Form.File = new Class({
     options: {
 
         max: 5, //maximum number of files to upload in one go...  0=unlimited.
-        list: '.list-group',
-        item: '.list-group-item',
-        drop: '.droppable',
-        progress: '.progress-bar',
+        list: ".list-group",
+        item: ".list-group-item",
+        drop: ".droppable",
+        progress: ".progress-bar",
         fireAtOnce: false,
         onComplete: function(){
             // reload
@@ -30,67 +34,71 @@ Form.File = new Class({
 
     initialize: function(input, options){
 
+        var form,
+            isXHR20 = false; //force old browser -- FIXME:  "FormData" in window;
+
         input = document.id(input);
-
-        var form = input.getParent('form');
-
+        form = input.getParent("form");
         if(!form) return false;
-        this.setOptions(options);
-        this.nbr = 0; //counter
-        var list = this.list = input.getParent(this.options.list);
-        this.submit = form.getElement('input[type=submit]');
-        this.progress = form.getElement(this.options.progress);
-        //console.log('FormData' in window ? "XHR2.0":"legacy");
-        this['disabled-for-now-FormData' in window ? 'uploadXHR2' : 'upload'](form, input,list);
+
+        options = this.setOptions(options).options;
+        this.nbr = 0; //upload file counter
+        this.list = input.getParent(options.list);
+        this.submit = form.getElement("input[type=submit]");
+        this.progress = form.getElement(options.progress);
+
+        //console.log("XHR20 ? ", isXHR20);
+        form.ifClass( isXHR20, "XHR20" , "legacy" );
+        this[ isXHR20 ? "uploadXHR2" : "upload"](form, input, this.list, options);
 
     },
 
     update: function( step ){
 
         var self = this,
-            disabled = 'disabled';
-        console.log('update ',self.nbr,step);
+            disabled = "disabled";
+
+        console.log("update ",self.nbr,step);
 
         self.nbr += step;
-        self.submit.set(disabled, self.nbr ? '':disabled );
+        self.submit.set(disabled, self.nbr ? "":disabled );
         self.list.getFirst().ifClass(self.nbr >= self.options.max, disabled);
 
     },
 
-    uploadXHR2: function(form,input,list){
-
-        //console.log("xhr2.0", form.action, form.get('action'), input.name);
+    uploadXHR2: function(form,input,list, options){
 
         var self = this,
-            options = self.options,
-            name = input.get('name'),
+            name = input.get("name"),
             drop = form.getElement(options.drop),
             progress = self.progress,
+
             fireAtOnce = function(){ if(options.fireAtOnce) submit(); },
+
             uploadReq = new Request.File({
-                url: form.get('action'),
+                url: form.get("action"),
                 onRequest: function(){
-                    progress.setStyle('width', 0).getParent().removeClass('hidden');
+                    progress.setStyle("width", 0).getParent().removeClass("hidden");
                 },
                 onProgress: function(event){
                     var percent = event.loaded.toInt(10) / event.total.toInt(10);
-                    progress.setStyle('width', (percent * 100).toInt().limit(0,100) + '%');
+                    progress.setStyle("width", (percent * 100).toInt().limit(0,100) + "%");
                 },
                 onComplete: function(){
-                    progress.setStyle('width', '100%');
-                    self.fireEvent('complete', Array.slice(arguments));
+                    progress.setStyle("width", "100%");
+                    self.fireEvent("complete", Array.slice(arguments));
                     this.reset();
                 }
             }),
-            
+
             //select one or more files via input[type=file] or drag/drop
-            inputFiles = new Form.MultipleFileInput(input, list, drop, {
+            inputFiles = new Form.MultipleFile(input, list, drop, {
                 onDrop: fireAtOnce,
                 onChange: fireAtOnce,
                 onAdd: self.update.pass(+1,self),
                 onRemove: self.update.pass(-1,self)
             }),
-            
+
             submit = function(event){
                 if (event) event.preventDefault();
                  inputFiles.getFiles().each(function(file){
@@ -98,8 +106,8 @@ Form.File = new Class({
                 });
                 uploadReq.send();
             };
-            
-        form.addEvent('submit', submit);
+
+        form.addEvent("submit", submit);
 
         self.reset = function(){
 
@@ -114,18 +122,20 @@ Form.File = new Class({
             */
 
         };
-        
+
     },
     /*
     Function: upload
-        Legacy upload handler, compatible with legacy input[type=file] capabilities
-    The script works by hiding the file input element when a file is selected,
-    then immediately replacing it with a new, empty one.
-    Although ideally the extra elements would be hidden using the CSS setting
-    'display:none', this causes Safari to ignore the element completely when
-    the form is submitted. So instead, elements are moved to a position
-    off-screen.
-    On submit, any remaining empty file input element is removed.
+        Legacy upload handler, compatible with legacy input[type=file] capabilities.
+
+        The script works by hiding the file input element when a file is selected,
+        then immediately replacing it with a new, empty one.
+        Although ideally the extra elements would be hidden using the CSS setting
+        "display:none", this causes Safari to ignore the element completely when
+        the form is submitted. So instead, elements are moved to a position
+        off-screen.
+        On submit, any remaining empty file input element is removed.
+
     DOM structure:
     (start code)
      ul.list-group
@@ -141,42 +151,39 @@ Form.File = new Class({
             a.delete
     (end)
     */
-    upload: function(form,input,list){
+    upload: function(form,input,list,options){
 
-        console.log("legacy");
-
-        var self = this,
-            options = self.options;
+        var self = this;
 
         list.addEvents({
-            'change:relay(input)': function(){
-            
+            "change:relay(input)": function(){
+
                 //this event can only be received on the first input[type=file]
                 var input = this,
                     item = input.getParent(options.item),
                     newItem = item.clone(true, true);
-                    
-                input.set('id',String.uniqueID());
-                item.getElement('label').set('text', input.value.replace(/.*[\\\/]/, '') );
-                item.getElement('.delete').removeClass('hidden');
-                item.removeClass('droppable');
-                list.grab(newItem,'top');
+
+                input.set("id",String.uniqueID());
+                item.getElement("label").set("text", input.value.replace(/.*[\\\/]/, "") );
+                item.getElement(".delete").removeClass("hidden");
+                item.removeClass("droppable");
+                list.grab(newItem,"top");
                 self.update(+1);
             },
-            'click:relay(a.delete)': function(){
+            "click:relay(a.delete)": function(){
                 this.getParent(options.item).destroy();
                 self.update(-1);
             }
         });
 
-        form.addEvent('submit', function(){
-            list.getElement('input').destroy(); //remove first input[type=file] which is empty
+        form.addEvent("submit", function(){
+            list.getElement("input").destroy(); //remove first input[type=file] which is empty
             self.progressRpc();   //legacy rpc-based progress handler...
         });
 
         /* not used
         this.reset = function(){
-            list.getElements(':not(:first-child)').destroy();
+            list.getElements(":not(:first-child)").destroy();
         };
         */
 
@@ -192,19 +199,19 @@ Form.File = new Class({
     }}}}
     */
     progressRpc: function(){
-    
+
         var progress = this.progress;
 
         if( progress ){
 
-            progress.getParent().removeClass('hidden');
+            progress.getParent().removeClass("hidden");
 
-            this.options.rpc( progress.get('data-progressid'), function(result){
+            this.options.rpc( progress.get("data-progressid"), function(result){
 
                 //console.log("rpc progress result ",result);
                 if( result && result.code ){
                     result = result.toInt().limit(0,100);
-                    progress.setStyle('width',result+"%");
+                    progress.setStyle("width",result + "%");
                     if( result < 100 ){ progressRpc.delay(500); }
                 }
 
@@ -215,4 +222,5 @@ Form.File = new Class({
     }
 
 });
+
 }();

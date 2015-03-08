@@ -43,7 +43,7 @@ Request.File = new Class({
 
     send: function(options){
         if (!this.check(options)) return this;
-//console.log(this.formData);
+        //console.log(this.formData, this.options.url);
         this.options.isSuccess = this.options.isSuccess || this.isSuccess;
         this.running = true;
 
