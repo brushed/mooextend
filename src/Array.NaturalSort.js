@@ -4,12 +4,12 @@ Array.NaturalSort.js
     Provide support for sorting arrays using a "natural" sorting algoritm.
 
 Implements:
-    >  Array.sortable(column)
+    >  Array.toNatural(column)
     >  Array.naturalSort(column,force)
 
 Example:
     [0, 1, "017", 6, , 21 ].naturalSort();  //[0, 1, 6, "017", 21]
-    [0, 1, "017", 6, , 21 ].sortable();  //[0, 1, 17, 6, 21]
+    [0, 1, "017", 6, , 21 ].toNatural();  //[0, 1, 17, 6, 21]
 
     [[6,"chap 1-14"],["05","chap 1-4"]].naturalSort(1); //[["05","chap 1-4"],[6,"chap 1-14"]]
     rows.naturalSort( 3 );
@@ -19,7 +19,7 @@ Example:
 
 !function(){
 
-/* helper stuff for <array>.sortable() */
+/* helper stuff for <array>.toNatural() */
 
 var reNAT = /([-+]?\d+)|(\D+)/g,  //split string in sequences of digits
 
@@ -36,15 +36,15 @@ function parseKMGT( v ){
 /*
 Function: naturalCompare
     Helper comparison function for <array>.naturalSort().
-    Each entry of the sortable array consists of a 2 item array:
+    Each entry of the toNatural array consists of a 2 item array:
     [0] - the actual data to be sorted (can be of any data type, dom nodes, etc.)
-    [1] - the sortable value, which is either a scalar or an array of scalars
+    [1] - the toNatural value, which is either a scalar or an array of scalars
 */
 function naturalCompare(a, b){
 
     var aa, bb, i = 0, t;
 
-    // retrieve the sortable values: scalars or tokenized arrays
+    // retrieve the toNatural values: scalars or tokenized arrays
     a = a[1];
     b = b[1];
 
@@ -74,8 +74,8 @@ function naturalCompare(a, b){
 Array.implement({
 
     /*
-    Function: sortable(column)
-        Convert this array into a sortable array.
+    Function: toNatural(column)
+        Convert this array into an array with natural sortable data.
 
         1. Parse the column and auto-guess the data-type.
         2. Convert all data to scalars according to the data-type.
@@ -98,7 +98,7 @@ Array.implement({
     Returns:
         comparison function which can be used to sort the table
     */
-    sortable: function( column ){
+    toNatural: function( column ){
 
         var len = this.length,
             num = [], dmy = [], kmgt = [], nat = [],
@@ -143,9 +143,9 @@ Array.implement({
     /*
     Function: naturalSort
         Sort the elements of an array, using a "natural" algoritm.
-        First it converts to sort key into a sortable array: <array>.sortable()
+        First it converts to sort key into a toNatural array: <array>.toNatural()
         Then it sorts the array with the naturalCompare() routine.
-        To increase speed, the sortable arrays are cached.
+        To increase speed, the toNatural arrays are cached.
 
     Example:
         [0, 1, "017", 6, , 21 ].naturalSort();  //=> [0, 1, 6, "017", 21]
@@ -157,20 +157,20 @@ Array.implement({
     naturalSort: function(column, force){
 
         var self = this,
-            sortable = [],
+            toNatural = [],
             cache = "cache",
             len = self.length,
             i;
 
 
-        //1. Retrieve sortable: either from cache or via <array>.sortable
+        //1. Retrieve toNatural: either from cache or via <array>.toNatural
 
         if( isNaN( column ) ){    // 1D array : [ .. ]
 
-            sortable = self[cache];
-            if( column/*==force*/ || !sortable ){
+            toNatural = self[cache];
+            if( column/*==force*/ || !toNatural ){
 
-                sortable = self[cache] = self.sortable();
+                toNatural = self[cache] = self.toNatural();
 
             }
 
@@ -185,14 +185,14 @@ Array.implement({
 
             if( force || isNaN( self[0][cache][column] ) ){
 
-                sortable = self.sortable(column);
-                for(i = 0; i < len; i++){ self[i][cache][column] = sortable[i]; }
+                toNatural = self.toNatural(column);
+                for(i = 0; i < len; i++){ self[i][cache][column] = toNatural[i]; }
 
             } else {
 
-                //retrieved cached sortable array
-                sortable = [];
-                for(i = 0; i < len; i++){ sortable[i] = self[i][cache][column]; }
+                //retrieved cached toNatural array
+                toNatural = [];
+                for(i = 0; i < len; i++){ toNatural[i] = self[i][cache][column]; }
 
              }
 
@@ -200,11 +200,11 @@ Array.implement({
 
         //2. Do the actual sorting
 
-        for(i = 0; i < len; i++){ sortable[i] = [ self[i], sortable[i] ]; }
+        for(i = 0; i < len; i++){ toNatural[i] = [ self[i], toNatural[i] ]; }
 
-        sortable.sort( naturalCompare );
+        toNatural.sort( naturalCompare );
 
-        for(i = 0; i < len; i++){ self[i] = sortable[i][0]; }
+        for(i = 0; i < len; i++){ self[i] = toNatural[i][0]; }
 
         return self;
 
