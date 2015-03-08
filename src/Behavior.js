@@ -31,7 +31,7 @@ var Behavior = new Class({
 
     add: function(selector, behavior, options, once){
 
-        this.behaviors.push({s: selector, b: behavior, o: options, once:once});
+        this.behaviors.push({s: selector, b: behavior, o: options, once: once});
         return this;
 
     },
@@ -44,16 +44,17 @@ var Behavior = new Class({
 
     update: function(){
 
-        var cache = "_bhvr", updated, type, isClass, isFunction, nodes, node, i=0, j, item, behavior, options;
+        var cache = "_bhvr", updated, type, isClass, isFunction,
+            nodes, node, i = 0, j, item, behavior, options;
 
-        while( item = this.behaviors[i++] ){
+        while( item = this.behaviors[ i++ ] ){
 
             //console.log("BEHAVIOR ", item.once?"ONCE ":"", nodes.length, item.s, typeOf(item.b) );
             options = item.o;
             behavior = item.b;
             type = typeOf(behavior);
-            isClass = ( type=='class' );
-            isFunction = ( type=='function' );
+            isClass = ( type == "class" );
+            isFunction = ( type == "function" );
 
             nodes = $$(item.s); //selector
             if( nodes[0] ){
@@ -65,10 +66,10 @@ var Behavior = new Class({
 
                 } else {
 
-                    for( j=0; node = nodes[j++]; ){
+                    for( j=0; node = nodes[ j++ ]; ){
 
                         updated = node[cache] || (node[cache] = []);
-    
+
                         if ( updated.indexOf(item) < 0 ){
 
                             //if( isString ) node[behavior](options);

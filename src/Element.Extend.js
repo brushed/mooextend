@@ -19,14 +19,14 @@ Element.implement({
         (element) - This Element
 
     Examples:
-    >    $('page').ifClass( i>5, 'hideMe' );
+    >    $("page").ifClass( i > 5, "hideMe" );
     */
-    ifClass : function(flag, T_Class, F_Class){
+    ifClass: function(flag, trueClass, falseClass){
 
-        T_Class = T_Class||'';
-        F_Class = F_Class||'';
+        trueClass = trueClass || "";
+        falseClass = falseClass || "";
 
-        return this.addClass(flag?T_Class:F_Class).removeClass(flag?F_Class:T_Class);
+        return this.addClass(flag ? trueClass : falseClass).removeClass(flag ? falseClass : trueClass);
 
     },
 
@@ -49,18 +49,18 @@ Element.implement({
             <children>
 
         //javaScript
-        var secondElement = 'div#secondElement'.slick();
-        secondElement.wrapChildren($('myFirstElement'));
+        var secondElement = "div#secondElement".slick();
+        secondElement.wrapChildren($("myFirstElement"));
 
         //after
         div#firstElement
             div#secondElement
-            <children>    
+            <children>
     (end)
     */
     /*CHECKME: obsolete ??
     wrapChildren : function(el){
-    
+
         while( el.firstChild ){ this.appendChild( el.firstChild ); }
         el.appendChild( this ) ;
         return this;
@@ -70,8 +70,10 @@ Element.implement({
 
     /*
     Function: addHover
-        Shortcut function to add 'hover' css class to an element.
+        Shortcut function to add a css class to an element on mouseenter,
+        and remove it again on mouseleave.
         This allows to support :hover effects on all elements, also in IE.
+        Obsolete
 
     Arguments
         clazz - (optional) hover class-name, default is {{hover}}
@@ -80,11 +82,11 @@ Element.implement({
         (element) - This Element
 
     Examples:
-    >    $('thisElement').addHover();
+    >    $("thisElement").addHover();
     */
     addHover: function( clazz ){
 
-        clazz = clazz || 'hover';
+        clazz = clazz || "hover";
 
         return this.addEvents({
             mouseenter: function(){ this.addClass(clazz); },
@@ -95,13 +97,14 @@ Element.implement({
 
     /*
     Function: onHover
-        Convert element into a hover menu.
+        Turns a DOM element into a hoverable menu.
 
     Arguments:
         toggle - (string,optional) A CSS selector to match the hoverable toggle element
+        onOpen - (function, optional) Function which is call when opening the menu
 
     Example
-    > $('li.dropdown-menu').onHover('ul');
+    > $("li.dropdown-menu").onHover("ul");
     */
     onHover: function( toggle, onOpen ){
 
@@ -109,11 +112,18 @@ Element.implement({
 
         if( toggle = element.getParent(toggle) ){
 
-             element.fade('hide');
+             element.fade("hide");  //CHECKME : is this sill needed, menu should be hidden/visible depending on .open
 
              toggle.addEvents({
-                mouseenter: function(){ element.fade(0.9); toggle.addClass('open'); if(onOpen) onOpen(); },
-                mouseleave: function(){ element.fade(0);   toggle.removeClass('open'); }
+                mouseenter: function(){
+                    element.fade(0.9);
+                    toggle.addClass("open");
+                    if(onOpen){ onOpen(); }
+                },
+                mouseleave: function(){
+                    element.fade(0);
+                    toggle.removeClass("open");
+                }
             });
 
         }
@@ -122,36 +132,36 @@ Element.implement({
 
     /*
     Function: onToggle
-        Set/reset '.active' class of an element, based on click events received on 
-        the element referred to by the 'data-toggle' attribute.
+        Set/reset ".active" class of an element, based on click events received on
+        the element referred to by the "data-toggle" attribute.
 
     Arguments:
         toggle - A CSS selector of clickable toggle buttons
             The selector "buttons" is used to style a group of checkboxes or radio-buttons.  (ref. Bootstrap)
-            
-        active - CSS classname to toggle this element (default is '.active' )
+
+        active - CSS classname to toggle this element (default is ".active" )
 
     Example
     (start code)
-       wiki.add('[data-toggle]', function(element){
-           element.onToggle( element.get('data-toggle') );
+       wiki.add("[data-toggle]", function(element){
+           element.onToggle( element.get("data-toggle") );
        })
     (end)
-    
+
     DOM Structure
     (start code)
         //normal toggle case
-        div[data-toggle="button#somebutton"](.active) 
+        div[data-toggle="button#somebutton"](.active)
         ..
         button#somebutton Click here to toggle that
-        
+
         //special toggle case with "buttons" selector
         div.btn-group[data-toggle="buttons"]
             label.btn.btn-default(.active)
-                input[type="radio"][name="aRadio"] checked='checked' value="One" />
+                input[type="radio"][name="aRadio"] checked="checked" value="One" />
             label.btn.btn-default(.active)
                 input[type="radio"][name="aRadio"] value="Two" />
-        
+
     (end)
 
     */
@@ -161,19 +171,19 @@ Element.implement({
         active = active || "active";
 
         if( toggle == "buttons" ){
-        
+
             toggle = function(){
-                //FIXME: differentiate between radioboxes and checkboxes !!
-                element.getElements('.'+active).removeClass(active);
-                element.getElements(':checked !').addClass(active);
+                //FIXME: differentiate between radioboxes and checkboxes
+                element.getElements("." + active).removeClass(active);
+                element.getElements(":checked !").addClass(active);
             };
             toggle();
-            element.addEvent('click', toggle);
-        
+            element.addEvent("click", toggle);
+
         } else {
 
             //if(!document.getElements(toggle)[0]){ console.log("toggle error:",toggle); }
-            document.getElements(toggle).addEvent('click', function(event){
+            document.getElements(toggle).addEvent("click", function(event){
                 event.stop();
                 element.toggleClass( active );
             });
@@ -185,46 +195,48 @@ Element.implement({
 
     /*
     Function onModal
-        Open a modal dialog with ''message''.
-        
-        Used on forms (submit) or form-elements (click) to get a 
+        Open a modal dialog with ""message"".
+
+        Used on forms (submit) or form-elements (click) to get a
         confirmation prior to executing the default behaviour of the event.
         TODO: use DOM based modal dialog rather then JS confirm(..)
-    
+
     Example:
     (start code)
         <form data-modal="Are your really sure?" ... > .. </form>
-        
-        behavior.add('[data-modal]', function(element){
-            element.onModal( element.get('data-modal') );
+
+        behavior.add("[data-modal]", function(element){
+            element.onModal( element.get("data-modal") );
         });
-        
+
     (end)
 
     */
-    onModal:function( message ){
+    onModal: function( message ){
 
-        this.addEvent( this.match('form') ? 'submit' : 'click' , function(e){
+        this.addEvent( this.match("form") ? "submit" : "click", function( /*event*/ ){
+
+console.log(message);
 
             return window.confirm(message);
             /*
             TODO
             build modal dialog
-            modalbody.set('html',message);
+            modalbody.set("html",message);
             return modaldialog.show();
             */
 
         });
     },
-    
+
     /*
     Function sticky
-        Simulate 'position:sticky'.
+        Simulate "position:sticky".
         Keep the element fixed on the screen, during scrolling.
         Only supports top-bottom scrolling.
-    
+
     Example:
-    (start code)    
+    (start code)
         //css
         .sticky {
             display:block;
@@ -235,81 +247,82 @@ Element.implement({
             top: 0;
             z-index: @sticky-index;
 
-            // avoid page-bump when sticky become 'fixed', by adding a spacer with its height
-            + .sticky-spacer { .show; }    
+            // avoid page-bump when sticky become "fixed", by adding a spacer with its height
+            + .sticky-spacer { .show; }
         }
-    
-        wiki.add('.sticky', function(element){ element.onSticky() );  });        
+
+        wiki.add(".sticky", function(element){ element.onSticky() );  });
     (end)
     */
     onSticky: function(){
-    
-        //FFS: check for native position:sticky support 
+
+        //FFS: check for native position:sticky support
         var element = this,
             origWidth = element.offsetWidth,
             origOffset = element.getPosition(document.body).y, //get offset relative to the doc.body
             on;
 
-        'div.sticky-spacer'.slick({styles:{height:element.offsetHeight}}).inject(element,'after');
+        "div.sticky-spacer".slick({styles: {height: element.offsetHeight} }).inject(element, "after");
 
-        //FFS: consider adding throttle to limit event invocations eg 'scroll:throttle'
-        document.addEvent('scroll', function(){
+        //FFS: consider adding throttle to limit event invocations eg "scroll:throttle"
+        document.addEvent("scroll", function(){
 
             on = ( window.scrollY >= origOffset );
 
-            element.ifClass( on, 'stickyOn' ).setStyle('width', on ? origWidth : '' );
-            //set the width of the fixed element, cause 'position:fixed' is relative to the document, 
+            element.ifClass(on, "stickyOn").setStyle("width", on ? origWidth : "" );
+            //take care of the "inherited" width
+            //set the width of the fixed element, because "position:fixed" is relative to the document,
             //therefore the element may loose inherited box widths (FFS: quid other inherited styles ??)
 
         });
     },
-    
+
     /*
     Function: getDefaultValue
         Returns the default value of a form element.
-        Inspired by get('value') of mootools, v1.1
+        Inspired by get("value") of mootools, v1.1
 
     Note:
         Checkboxes will return true/false depending on the default checked status.
         ( input.checked to read actual value )
-        The value returned in a POST will be input.get('value')
-        and is depending on the value set by the 'value' attribute (optional)
+        The value returned in a POST will be input.get("value")
+        and is depending on the value set by the "value" attribute (optional)
 
     Returns:
         (value) - the default value of the element; or false if not applicable.
 
     Examples:
-    > $('thisElement').getDefaultValue();
+    > $("thisElement").getDefaultValue();
     */
     getDefaultValue: function(){
 
         var self = this,
-            type = self.get('type'),
+            type = self.get("type"),
             values = [];
 
-        switch( self.get('tag') ){
+        switch( self.get("tag") ){
 
-            case 'select':
+            case "select":
 
                 Array.from(this.options).each( function(option){
 
-                    if (option.defaultSelected){ values.push(option.value||option.text); }
+                    if (option.defaultSelected){ values.push(option.value || option.text); }
 
                 });
 
                 return (self.multiple) ? values : values[0];
 
-            case 'input':
+            case "input":
 
-                if( type == 'checkbox' ){   //checkbox.get-value = returns 'on' on some browsers, T/F on others
+                if( type == "checkbox" ){   //checkbox.get-value = returns "on" on some browsers, T/F on others
 
-                    return ('input[type=checkbox]'+(self.defaultChecked?":checked":"")).slick().get('value');
+                    return ("input[type=checkbox]" + (self.defaultChecked?":checked":"")).slick().get("value");
 
                 }
 
-                if( !'radio|hidden|text|password'.test(type) ){ break; }
+                if( !"radio|hidden|text|password".test(type) ){ break; }
 
-            case 'textarea':
+            case "textarea":
 
                 return self.defaultValue;
 
@@ -346,31 +359,31 @@ Element.implement({
             b
 
     Example:
-    >   el.groupChildren(/hr/i,'div.col');  
-    >   el.groupChildren(/h[1-6]/i,'div.col');
-    >   el.groupChildren( container.getTag(), 'div');
+    >   el.groupChildren(/hr/i,"div.col");
+    >   el.groupChildren(/h[1-6]/i,"div.col");
+    >   el.groupChildren( container.getTag(), "div");
     */
-    groupChildren:function(start, grab, replacesFn){
+    groupChildren: function(start, grab, replacesFn){
 
-        var next, 
-            group = grab.slick().inject(this,'top'),
+        var next,
+            group = grab.slick().inject(this, "top"),
             firstGroupDone = false;
 
         //need at least one start element to get going
         if( this.getElement(start) ){
 
             while( next = group.nextSibling ){
-            
-                if( ( next.nodeType!=3 ) && next.match(start) ){  //start a new group
-                    
-                    if( firstGroupDone ){  group = grab.slick(); } //make a new group
-                    if( replacesFn ) replacesFn(group, next);
+
+                if( ( next.nodeType != 3 ) && next.match(start) ){  //start a new group
+
+                    if( firstGroupDone ){ group = grab.slick(); } //make a new group
+                    if( replacesFn ){ replacesFn(group, next); }
                     group.replaces( next );  //destroys the matched start element
                     firstGroupDone = true;
 
                 } else {
 
-                    group.appendChild( next );  //grap all other elements in the group 
+                    group.appendChild( next );  //grap all other elements in the group
 
                 }
             }
@@ -385,30 +398,30 @@ Element.implement({
     Arguments:
         fn - callback function
         options - (object)
-        options.event - (string) event-type to observe, default = 'keyup'
+        options.event - (string) event-type to observe, default = "keyup"
         options.delay - (number) timeout in ms, default = 300ms
 
     Example:
     >    $(formInput).observe(function(){
-    >        alert('my value changed to '+this.get('value') );
+    >        alert("my value changed to "+this.get("value") );
     >    });
 
     */
     observe: function(callback, options){
 
         var element = this,
-            value = element.get('value'),
-            event = (options && options.event) || 'keyup',
+            value = element.get("value"),
+            event = (options && options.event) || "keyup",
             delay = (options && options.delay) || 300,
             timer = null;
 
-        return element.set({autocomplete:'off'}).addEvent(event, function(){
+        return element.set({autocomplete: "off"}).addEvent(event, function(){
 
-            var v = element.get('value');
+            var v = element.get("value");
 
             if( v != value ){
                 value = v;
-                //console.log('observer ',v);
+                //console.log("observer ",v);
                 clearTimeout( timer );
                 timer = callback.delay(delay, element);
             }
