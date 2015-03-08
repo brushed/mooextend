@@ -72,20 +72,19 @@ String.implement({
         (start code)
         //initialize the translation strings
         String.I18N = {
-            "javascript.moreInfo":"More",
-            "javascript.imageInfo":"Image {0} of {1}",  //indexed parms
-            "javascript.imageInfo2":Image {imgCount} of {totalCount}"   //named parms
-            "javascript.curlyBraces":"Show \{Curly Braces}",  //escaped curly braces
+            "javascript.moreInfo": "More",
+            "javascript.imageInfo": "Image {0} of {1}",  //indexed parms
+            "javascript.imageInfo2": "Image {imgCount} of {totalCount}"   //named parms
+            "javascript.curlyBraces": "Show \{Curly Braces}",  //escaped curly braces
         }
         String.I18N.PREFIX="javascript.";
 
         "moreInfo".localize() === "More";
-        "imageInfo".localize(2,4) ===  "Image 2 of 4"
-        "imageInfo2".localize({totalCount:4, imgCount:2}) === "Image 2 of 4"
+        "imageInfo".localize(2, 4) ===  "Image 2 of 4"
+        "imageInfo2".localize({totalCount: 4, imgCount: 2}) === "Image 2 of 4"
         "curlyBraces".localize() === "Show {Curly Braces}"
 
         (end)
-
     */
     localize: function( params ){
 
@@ -119,14 +118,14 @@ String.implement({
 
     /*
     Function:slick(props)
-        Convert css selector into a new DOM Element
+        Fancy DOM Element builder
 
     Example:
     >    "input#someID.someClass1.someClass2[disabled=true]".slick({text:"Hi"});
     */
-    slick:function(props){
+    slick: function(props){
 
-        return new Element(this+"", props);
+        return new Element(this + "", props);
 
     },
 
@@ -139,7 +138,7 @@ String.implement({
         > <command>.sliceArgs( args (, regexp) );
 
     Arguments:
-        args : (string) or dom-element with classname 
+        args : (string) or dom-element with classname
         regexp : (optional string) pattern match for the arguments, defaults (-\w+)*
 
     Example
@@ -160,25 +159,25 @@ String.implement({
     },
 
     /*
-    Function: fetchContext    
+    Function: fetchContext
         Match an elements classname or string against one of the bootstrap contextual patterns.
         Supported contexts: default, primary, success, info, warning, danger
-        
+
         Return a (string) classname to invoke the contextual colors.
-        
+
     Example
     >    'panel'.fetchContext( 'accordion-danger') => 'panel panel-danger'
     >    'panel'.fetchContext( 'commentbox-success') => 'panel panel-success'
 
     */
     fetchContext : function(element){
-    
+
         var name = element.grab /*isElement*/ ? element.className : element;
 
         name = (name.match( /\b(default|primary|success|info|warning|danger)(\b|$)/ )||[,'default'])[1];
 
-        return this+' '+this+'-'+name ;
-        
+        return this + ' ' + this + '-' + name ;
+
     }
 
 });
