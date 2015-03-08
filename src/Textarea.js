@@ -14,11 +14,11 @@ Example:
 */
 var Textarea = new Class({
 
-    Implements: [Options,Events],
+    Implements: [Options, Events],
 
     //options: { onChange:function(e){} );
 
-    initialize: function(el,options){
+    initialize: function(el, options){
 
         var self = this,
             ta = self.ta = document.id(el),
@@ -28,25 +28,23 @@ var Textarea = new Class({
                 var v = ta.value;
                 if( v !== lastValue ){
                     //console.log("TXTA change");
-                    self.fireEvent('change', e);
+                    self.fireEvent("change", e);
                     lastValue = v;
                 }
             };
 
         self.setOptions(options);
 
-        ta.addEvents({ change:changeFn, keyup:changeFn });
+        ta.addEvents({ change: changeFn, keyup: changeFn });
 
-        //Create shadow div to support pixel measurement of the caret in the textarea
-        //Note:this only works ok if the textarea font is monospace
-        self.taShadow = 'div[style=position:absolute;visibility:hidden;overflow:auto]'
-          .slick()
-          .inject(ta,'before')
+        //Create a shadow div to support getCoordinates() of any character in the textarea
+        //This only works if the textarea font is monospace (?)
+        self.taShadow = "div[style=position:absolute;visibility:hidden;overflow:auto]".slick()
           .setStyles( ta.getStyles(
-            'font-family0font-size0line-height0text-indent0padding-top0padding-right0padding-bottom0padding-left0border-left-width0border-right-width0border-left-style0border-right-style0white-space0word-wrap'
+            "font-family0font-size0line-height0text-indent0padding-top0padding-right0padding-bottom0padding-left0border-left-width0border-right-width0border-left-style0border-right-style0white-space0word-wrap"
             .split(0)
         ));
-        
+
         return this;
     },
 
@@ -57,9 +55,9 @@ var Textarea = new Class({
         the element when passed an instance of the class. (mootools 1.2.x)
 
     Example:
-    >    var ta = new Textarea('textarea-element');
-    >    $('textarea-element') == ta.toElement();
-    >    $('textarea-element') == $(ta); //mootools 1.2.x
+    >    var ta = new Textarea("textarea-element");
+    >    $("textarea-element") == ta.toElement();
+    >    $("textarea-element") == $(ta); //mootools 1.2.x
     */
     toElement: function(){
         return this.ta;
@@ -74,18 +72,22 @@ var Textarea = new Class({
     },
     /*
     Function: slice
-        Mimics the string slice function on the value (text content) of the textarea.
-    Arguments:
-        Ref. javascript slice function
+        Invokes slice(..) on the value of the textarea
     */
-    slice: function(start,end){
-        return this.ta.value.slice(start,end);
+    slice: function(start, end){
+        return this.ta.value.slice(start, end);
     },
-
+    /*
+    Function: indexOf
+        Invokes indexOf(..) on the value of the textarea
+    */
+    indexOf: function(searchValue, fromIndex){
+        return this.ta.value.indexOf(searchValue, fromIndex);
+    },
 
     /*
     Function: getFromStart
-        Returns the first not selected part of the textarea, till the start of the selection.
+        Returns the start of the textarea, upto the start of the selection.
     */
     getFromStart: function(){
         return this.slice( 0, this.getSelectionRange().start );
@@ -93,7 +95,7 @@ var Textarea = new Class({
 
     /*
     Function: getTillEnd
-        Returns the last not selected part of the textarea, starting from the end of the selection.
+        Returns the end of the textarea, starting from the end of the selection.
     */
     getTillEnd: function(){
         return this.slice( this.getSelectionRange().end );
@@ -105,7 +107,7 @@ var Textarea = new Class({
 
     Note:
         IE fixme: this may return any selection, not only selected text in this textarea
-            //if(Browser.Engine.trident) return document.selection.createRange().text;
+        //if(Browser.Engine.trident) return document.selection.createRange().text;
     */
     getSelection: function(){
 
@@ -116,11 +118,11 @@ var Textarea = new Class({
 
     /*
     Function: setSelectionRange
-        Selects the selection range of the textarea from start to end
+        Set a new selection range of the textarea
 
     Arguments:
-        start - start position of the selection
-        end - (optional) end position of the seletion (default == start)
+        start - start position of the new selection
+        end - (optional) end position of the new seletion (default is start)
 
     Returns:
         Textarea object
@@ -128,7 +130,7 @@ var Textarea = new Class({
     setSelectionRange: function(start, end){
 
         var ta = this.ta,
-            value,diff,range;
+            value, diff, range;
 
         if( !end ){ end = start; }
 
@@ -139,19 +141,19 @@ var Textarea = new Class({
         } else {
 
             value = ta.value;
-            diff = value.slice(start, end - start).replace(/\r/g, '').length;
-            start = value.slice(0, start).replace(/\r/g, '').length;
+            diff = value.slice(start, end - start).replace(/\r/g, "").length;
+            start = value.slice(0, start).replace(/\r/g, "").length;
 
             range = ta.createTextRange();
             range.collapse( true );
-            range.moveEnd('character', start + diff);
-            range.moveStart('character', start);
+            range.moveEnd("character", start + diff);
+            range.moveStart("character", start);
             range.select();
             //textarea.scrollTop = scrollPosition;
             //textarea.focus();
 
         }
-        ta.fireEvent('change');
+        ta.fireEvent("change");
         return this;
     },
 
@@ -159,14 +161,13 @@ var Textarea = new Class({
     Function: getSelectionRange
         Returns an object describing the textarea selection range.
 
-    Returns:
-        {{ { 'start':number, 'end':number, 'thin':boolean } }}
-        start - coordinate of the selection
-        end - coordinate of the selection
-        thin - boolean indicates whether selection is empty (start==end)
+    Returns: Object:
+        start - (number) start position of the selection
+        end - (number) end position of the selection
+        thin - (boolean) indicates whether selection is empty (start==end)
     */
 
-/* ffs
+    /* ffs
     getIERanges: function(){
         this.ta.focus();
         var ta = this.ta,
@@ -174,18 +175,18 @@ var Textarea = new Class({
             re = this.createTextRange(),
             dupe = re.duplicate();
         re.moveToBookmark(range.getBookmark());
-        dupe.setEndPoint('EndToStart', re);
+        dupe.setEndPoint("EndToStart", re);
         return { start: dupe.text.length, end: dupe.text.length + range.text.length, length: range.text.length, text: range.text };
     },
-*/
+    */
     getSelectionRange: function(){
 
         var ta = this.ta,
-            start = end = 0,
-            //caret = { start: 0, end: 0 /*, thin: true*/ },
+            start = 0,
+            end = 0,
             range, dup, value, offset;
 
-        if( ta.selectionStart!=null ){
+        if( ta.selectionStart != null ){
 
             //caret = { start: ta.selectionStart, end: ta.selectionEnd };
             start = ta.selectionStart;
@@ -194,30 +195,27 @@ var Textarea = new Class({
         } else {
 
             range = document.selection.createRange();
-            //if (!range || range.parentElement() != ta){ return caret; }
+
             if ( range && range.parentElement() == ta ){
                 dup = range.duplicate();
                 value = ta.value;
                 offset = value.length - value.match(/[\n\r]*$/)[0].length;
 
                 dup.moveToElementText(ta);
-                dup.setEndPoint('StartToEnd', range);
-                //caret.end = offset - dup.text.length;
+                dup.setEndPoint("StartToEnd", range);
                 end = offset - dup.text.length;
-                dup.setEndPoint('StartToStart', range);
-                //caret.start = offset - dup.text.length;
+
+                dup.setEndPoint("StartToStart", range);
                 start = offset - dup.text.length;
             }
         }
 
-        //caret.thin = (caret.start==caret.end);
-        //return caret;
-        return { start:start, end:end, thin:start==end };
+        return { start: start, end: end, thin: start == end };
     },
 
     /*
     Function: setSelection
-        Replaces the selection with a new value (concatenation of arguments).
+        Replaces the selection with a new string (concatenation of arguments).
         On return, the selection is set to the replaced text string.
 
     Arguments:
@@ -228,16 +226,16 @@ var Textarea = new Class({
         Textarea object, with a new selection
 
     Example:
-        > ta.setSelection("new", " value"); //replace selection by 'new value'
+        > ta.setSelection("new", " value"); //replace selection by "new value"
     */
     setSelection: function(){
 
-        var value = Array.from(arguments).join('').replace(/\r/g, ''),
+        var value = Array.from(arguments).join("").replace(/\r/g, ""),
             ta = this.ta,
             scrollTop = ta.scrollTop, //cache top
-            start,end,v,range;
+            start, end, v, range;
 
-        if( ta.selectionStart!=null ){
+        if( ta.selectionStart != null ){
 
             start = ta.selectionStart;
             end = ta.selectionEnd;
@@ -259,7 +257,7 @@ var Textarea = new Class({
         }
         ta.focus();
         ta.scrollTop = scrollTop;
-        ta.fireEvent('change');
+        ta.fireEvent("change");
         return this;
 
     },
@@ -276,7 +274,7 @@ var Textarea = new Class({
     */
     insertAfter: function(){
 
-        var value = Array.from(arguments).join('');
+        var value = Array.from(arguments).join("");
 
         return this.setSelection( value )
             .setSelectionRange( this.getSelectionRange().start + value.length );
@@ -290,7 +288,7 @@ var Textarea = new Class({
     isCaretAtStartOfLine: function(){
 
         var i = this.getSelectionRange().start;
-        return( (i<1) || ( this.ta.value.charAt( i-1 ).test( /[\n\r]/ ) ) );
+        return ( (i < 1) || ( this.ta.value.charAt(i - 1).test( /[\n\r]/ ) ) );
 
     },
 
@@ -312,34 +310,28 @@ var Textarea = new Class({
     getCoordinates: function( offset ){
 
         var ta = this.ta,
-            taShadow = this.taShadow,
+            //make sure the shadow element is always just in front of the textarea
+            taShadow = this.taShadow.inject(ta, "before"),
             value = ta.value,
-            delta = 0,
-            el,css,style,t,l,w,h;
+            el, style, t, l, w, h;
 
-        //prepare taShadow
-        css = ta.getStyles(['padding-left','padding-right','border-left-width','border-right-width']);
-        for(style in css){ delta +=css[style].toInt() }
-
-        //default offset is the position of the caret
+        //default character offset is the caret (cursor or begin of the selection)
         if( !offset ){ offset = this.getSelectionRange().end; }
 
         el = taShadow.set({
             styles: {
-                width: ta.offsetWidth - delta,
-                height: ta.getStyle('height')  //ensure proper handling of scrollbars - if any
+                width: ta.offsetWidth,
+                height: ta.getStyle("height")  //ensure proper handling of scrollbars - if any
             },
-            //FIXME: should we put the full selection inside the <i></i> bracket ? (iso a single char)
-            html: value.slice(0, offset) + '<i>A</i>' + value.slice(offset+1)
-        }).getElement('i');
+            html: value.slice(0, offset) + "<i>A</i>" + value.slice(offset + 1)
+        }).getElement("i");
 
         t = ta.offsetTop + el.offsetTop - ta.scrollTop;
         l = ta.offsetLeft + el.offsetLeft - ta.scrollLeft;
         w = el.offsetWidth;
         h = el.offsetHeight;
-        return {top:t, left:l, width:w, height:h, right:l+w, bottom:t+h}
+        return { top: t, left: l, width: w, height: h, right: l + w, bottom: t + h };
 
     }
 
 });
-
