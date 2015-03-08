@@ -1,13 +1,14 @@
 /*
 Function: hsv2rgb
     Convert HSV values into RGB values
+    Credits: www.easyrgb.com/math.php?MATH=M21#text21
 */
 Array.implement({
 
     hsv2rgb: function(){
-        // easyrgb.com/math.php?MATH=M21#text21
-        var r,A,B,C,F,
-            self = this,
+    
+        var self = this,
+            r,A,B,C,F,
             hue = self[0]/360, //hue - degrees from 0 to 360
             sat = self[1]/100, //saturation - %
             val = self[2]/100; //value - %
@@ -40,36 +41,35 @@ Array.implement({
     
     rgb2hsv: function(){
 
-        var hue=0, //hue - degrees from 0 to 360
-            sat=0, //saturation- %
-            self = this,
-            r = self[0]/255,
-            g = self[1]/255,
-            b = self[2]/255,
-            d2,dR,dG,dB,
-            maxVal = [r,g,b].max(), // Math.max(r, g, b),
-            //val = Math.round( maxVal*100 )
-            val = maxVal*100, //value - %
-            delta = maxVal - [r,g,b].min(); //Math.min(r, g, b);
+        var self = this,
+            hue = 0, //hue - degrees from 0 to 360
+            sat = 0, //saturation - %
+            tmp = 255, 
+            r = self[0]/tmp, dR,
+            g = self[1]/tmp, dG,
+            b = self[2]/tmp, dB,
+            maxRGB = [r,g,b].max(),         //Math.max(r, g, b),
+            deltaRGB = maxRGB - [r,g,b].min(); //Math.min(r, g, b);
 
-                        //if delta==0 : this is a gray, no chroma..
-        if( delta ){    //else chromatic data
+        if( deltaRGB ){    //if deltaRGB==0 : this is a gray, no chroma; otherwise chromatic data
 
-            sat = delta / maxVal;
-            d2 = delta / 2;
-            dR = (((maxVal - r) / 6) + d2) / delta;
-            dG = (((maxVal - g) / 6) + d2) / delta;
-            dB = (((maxVal - b) / 6) + d2) / delta;
+            sat = deltaRGB / maxRGB;
 
-            hue = (r == maxVal) ? dB - dG
-                : (g == maxVal) ? (1/3) + dR - dB
-                : /*b == maxVal*/ (2/3) + dG - dR;
+            tmp = deltaRGB / 2;
+            dR = (((maxRGB - r) / 6) + tmp) / deltaRGB;
+            dG = (((maxRGB - g) / 6) + tmp) / deltaRGB;
+            dB = (((maxRGB - b) / 6) + tmp) / deltaRGB;
+
+            hue = (r == maxRGB) ? dB - dG
+                : (g == maxRGB) ? (1/3) + dR - dB
+                : /*b == maxRGB*/ (2/3) + dG - dR;
 
             if (hue < 0) { hue += 1; }
             if (hue > 1) { hue -= 1; }
 
         }
         
-        return[ (.5+hue*360)|0, sat*100, val];
+        return [ hue*360, sat*100, maxRGB*100 ];
+
     }
 });
