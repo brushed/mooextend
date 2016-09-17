@@ -23,8 +23,8 @@ Element.implement({
     */
     ifClass: function(flag, trueClass, falseClass){
 
-        trueClass = trueClass || "";
-        falseClass = falseClass || "";
+        trueClass = trueClass || "" ;
+        falseClass = falseClass || "" ;
 
         return this.addClass(flag ? trueClass : falseClass).removeClass(flag ? falseClass : trueClass);
 
