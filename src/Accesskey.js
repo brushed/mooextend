@@ -13,10 +13,10 @@ Example:
 (start code)
     new Accesskey( $('#menu) );
 
-    //before operation
+    //before
     <a id="menu" accesskey="m" title="main menu">Menu</a>
 
-    //after operation
+    //after
     <a id="menu" accesskey="m" title="main menu [m]"><span class="accesskey">M</span>enu</a>
 
 (end)
