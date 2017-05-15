@@ -26,7 +26,7 @@ Examples:
 */
 
 !function(){
-
+/* testing commit*/
 var VGA = "black#000 green#008000 silver#c0c0c0 lime#0f0 gray#808080 olive#808000 white#fff yellow#ff0 maroon#800000 navy#000080 red#f00 blue#00f purple#800080 teal#008080 fuchsia#f0f aqua#0ff",
     c0l0r = 'i'.slick(),
 
